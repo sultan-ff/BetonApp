@@ -16,7 +16,7 @@ const authController = {
     // Proses Pendaftaran Akun (Register)
     registerProcess: async (req, res) => {
         try {
-            const { nama, email, no_hp, password, konfirmasi_password } = req.body;
+            const { nama, email, no_telp, password, konfirmasi_password } = req.body;
             const db = require('../config/db');
 
             if (password !== konfirmasi_password) {
@@ -34,7 +34,7 @@ const authController = {
 
             // Simpan password yang sudah di-hash (hashedPassword)
             await db.query(
-                'INSERT INTO user (nama, email, no_hp, password, role) VALUES (?, ?, ?, ?, ?)', 
+                'INSERT INTO user (nama, email, no_telp, password, role) VALUES (?, ?, ?, ?, ?)', 
                 [nama, email, no_hp, hashedPassword, 'pelanggan']
             );
 
