@@ -35,7 +35,7 @@ const authController = {
             // Simpan password yang sudah di-hash (hashedPassword)
             await db.query(
                 'INSERT INTO user (nama, email, no_telp, password, role) VALUES (?, ?, ?, ?, ?)', 
-                [nama, email, no_hp, hashedPassword, 'pelanggan']
+                [nama, email, no_telp, hashedPassword, 'pelanggan']
             );
 
             res.render('auth/login', { error: null, success: 'Pendaftaran berhasil! Silakan Log in.' });
