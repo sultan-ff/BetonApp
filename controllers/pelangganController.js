@@ -61,7 +61,7 @@ const pelangganController = {
         try {
             const { 
                 produk_id, volume, harga_satuan, metode_pembayaran, 
-                kabupaten, detail_alamat, nomor_telepon, rekening_refund, waktu_pengiriman 
+                kabupaten, alamat_pengiriman, nomor_telepon, rekening_refund, waktu_pengiriman 
             } = req.body;
             
             // VALIDASI 1: Volume harus kelipatan 7
@@ -92,7 +92,7 @@ const pelangganController = {
             }
 
             // Gabungkan kabupaten dan detail alamat
-            const alamat_pengiriman_lengkap = `${kabupaten} - ${detail_alamat}`;
+            const alamat_pengiriman_lengkap = `${kabupaten} - ${alamat_pengiriman}`;
             const total_harga = vol * parseInt(harga_satuan);
             const user_id = req.session.userId;
             
