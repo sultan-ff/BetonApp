@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Histori Pembelian - MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        /* Menggunakan ulang CSS struktur yang sama dari supplier.ejs untuk efisiensi */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; }
+        .admin-profile i { color: #8b5cf6; font-size: 18px; }
+
+        .page-header h2 { font-weight: 800; color: #4c1d95; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin-bottom: 30px; }
+
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-table-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: #1e293b; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .table { width: 100%; margin-bottom: 0; }
+        .table thead th { background-color: #f8fafc; color: #64748b; font-size: 11.5px; font-weight: 700; text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; border-top: none; }
+        .table tbody td { padding: 18px 24px; vertical-align: middle; font-size: 14px; color: #334155; }
+        
+        /* Badge Status */
+        .badge-po { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+        .po-menunggu { background: #fef3c7; color: #d97706; }
+        .po-disetujui { background: #e0f2fe; color: #0284c7; }
+        .po-selesai { background: #dcfce7; color: #16a34a; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/sidebar', { role: role }) %>
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i> <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Pembelian' %>
+            </div>
+        </div>
+        <div class="page-header">
+            <h2>Laporan Riwayat Pembelian</h2>
+            <p>Rekapitulasi seluruh dokumen Purchase Order (PO) yang diajukan oleh gudang.</p>
+        </div>
+
+        <div class="card-table">
+            <div class="card-table-header">
+                <div><i class="bi bi-clock-history" style="color: #8b5cf6;"></i> Histori Transaksi Pembelian</div>
+                <a href="/pembelian/laporan/cetak" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer"></i> Cetak Laporan PDF</a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>No. PO</th>
+                        <th>Nama Supplier</th>
+                        <th>Material/Produk</th>
+                        <th style="text-align: center;">Jumlah (m³)</th>
+                        <th>Status Akhir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (listLaporan.length === 0) { %>
+                        <tr><td colspan="6" class="text-center py-4">Belum ada riwayat PO.</td></tr>
+                    <% } else { %>
+                        <% listLaporan.forEach(item => { %>
+                        <tr>
+                            <td><%= new Date(item.tanggal).toLocaleDateString('id-ID', { dateStyle: 'medium' }) %></td>
+                            <td style="font-weight: bold; font-family: monospace;">#PO-MBP-<%= item.id %></td>
+                            <td style="font-weight: 600;"><%= item.nama_supplier %></td>
+                            <td><span style="background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 12.5px; border: 1px solid #e2e8f0;"><%= item.nama_produk %></span></td>
+                            <td style="text-align: center; font-weight: bold;"><%= item.jumlah %></td>
+                            <td><span class="badge-po po-<%= item.status %>"><%= item.status %></span></td>
+                        </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

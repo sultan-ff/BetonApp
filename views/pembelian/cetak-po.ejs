@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak PO #MBP-<%= po.id %></title>
+    <style>
+        /* CSS Khusus Dokumen Cetak A4 */
+        body { font-family: 'Times New Roman', Times, serif; color: #000; margin: 0; padding: 20px; background: #fff; }
+        .cetak-container { width: 100%; max-width: 800px; margin: 0 auto; background: #fff; padding: 20px 40px; }
+        
+        /* KOP SURAT ANTI-BADAI (PAKAI TABEL) */
+        .kop-surat-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-bottom: 4px double #000;
+            margin-bottom: 25px;
+        }
+        .kop-surat-table td {
+            padding-bottom: 15px;
+            vertical-align: middle;
+        }
+        .td-logo {
+            width: 18%; 
+            text-align: left;
+        }
+        .td-logo img {
+            width: 105px; 
+            height: auto;
+        }
+        .td-teks {
+            width: 64%; 
+            text-align: center;
+        }
+        .td-teks h1 {
+            margin: 0 0 5px 0;
+            font-size: 26px;
+            font-weight: 900;
+            font-family: 'Times New Roman', Times, serif; 
+            letter-spacing: 1px;
+            color: #01682f;
+            white-space: nowrap; /* Teks dilarang turun baris */
+        }
+        .td-teks p {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #000;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .td-spacer {
+            width: 18%; /* Penyeimbang kanan */
+        }
+
+        /* Judul Dokumen */
+        .doc-title { text-align: center; margin-bottom: 30px; }
+        .doc-title h2 { margin: 0; font-size: 20px; text-decoration: underline; text-transform: uppercase; }
+        .doc-title p { margin: 5px 0 0 0; font-weight: bold; }
+
+        /* Info Supplier & PO */
+        .info-grid { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 14px; }
+        .info-box { width: 45%; }
+        .info-box p { margin: 5px 0; }
+        .info-label { display: inline-block; width: 120px; font-weight: bold; }
+
+        /* Tabel Item PO */
+        .table-po { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px; }
+        .table-po th, .table-po td { border: 1px solid #000; padding: 10px 15px; text-align: left; }
+        .table-po th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+        .table-po td.center { text-align: center; font-weight: bold; }
+
+        /* Tanda Tangan */
+        .ttd-grid { display: flex; justify-content: space-between; margin-top: 50px; text-align: center; font-size: 14px; }
+        .ttd-box { width: 250px; }
+        .ttd-name { margin-top: 80px; font-weight: bold; text-decoration: underline; }
+
+        /* Sembunyikan tombol saat print betulan */
+        @media print {
+            @page { margin: 2cm; }
+            .btn-print-area { display: none !important; }
+            body { padding: 0; }
+            .cetak-container { padding: 0; }
+        }
+        
+        .btn-print-area { text-align: center; margin-bottom: 20px; }
+        .btn-print { background-color: #01682f; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 5px; cursor: pointer; font-family: sans-serif; font-weight: bold; }
+        .btn-print:hover { background-color: #014d23; }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="btn-print-area">
+        <button class="btn-print" onclick="window.print()">🖨️ Cetak Dokumen Sekarang</button>
+    </div>
+
+    <div class="cetak-container">
+        <table class="kop-surat-table">
+            <tr>
+                <td class="td-logo">
+                    <img src="/images/logo-mitrabeton.png" alt="Logo PT Mitrabeton Perkasa">
+                </td>
+                <td class="td-teks">
+                    <h1>PT. MITRABETON PERKASA</h1>
+                    <p>Jl. Lingkar Barat-Blok Kidul Kal, Pasuruhan Kidul – Jati Kab. Kudus</p>
+                    <p>E-mail: mitrabeton_perkasa@yahoo.com</p>
+                </td>
+                <td class="td-spacer"></td>
+            </tr>
+        </table>
+
+        <div class="doc-title">
+            <h2>Purchase Order (PO)</h2>
+            <p>No. Dokumen: #PO-MBP-<%= po.id %></p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-box">
+                <p><strong>Kepada Yth.</strong></p>
+                <p><span style="font-weight: bold; font-size: 16px;"><%= po.nama_supplier %></span></p>
+                <p><%= po.alamat || '-' %></p>
+                <p>Kontak: <%= po.kontak || '-' %></p>
+            </div>
+            <div class="info-box">
+                <p><span class="info-label">Tanggal PO</span>: <%= new Date(po.tanggal).toLocaleDateString('id-ID', { dateStyle: 'long' }) %></p>
+                <p><span class="info-label">Status</span>: <span style="text-transform: uppercase;"><%= po.status %></span></p>
+                <p><span class="info-label">Metode</span>: Pengadaan Barang Jadi</p>
+            </div>
+        </div>
+
+        <p style="font-size: 14px;">Bersama ini kami sampaikan pesanan pembelian (Purchase Order) dengan rincian sebagai berikut:</p>
+
+        <table class="table-po">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 45%;">Deskripsi Produk / Material</th>
+                    <th style="width: 20%;">Kuantitas (Volume)</th>
+                    <th style="width: 30%;">Keterangan Tambahan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="center">1</td>
+                    <td style="font-weight: bold;"><%= po.nama_produk %></td>
+                    <td class="center"><%= po.jumlah %> Satuan / m³</td>
+                    <td><%= po.keterangan || '-' %></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="ttd-grid">
+            <div class="ttd-box">
+                <p>Kudus, <%= new Date().toLocaleDateString('id-ID', { dateStyle: 'long' }) %></p>
+                <p>Hormat Kami,</p>
+                <p class="ttd-name"><%= namaUser.toUpperCase() %></p>
+                <p>Divisi Pembelian (Procurement)</p>
+            </div>
+            <div class="ttd-box">
+                <p>Menyetujui,</p>
+                <p>Pihak Supplier / Mitra</p>
+                <p class="ttd-name">( ______________________ )</p>
+                <p>Cap & Tanda Tangan</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

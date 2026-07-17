@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pesanan - Panel Penjualan MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f8fafc; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        /* ========================================================================== */
+
+        /* ── Header Halaman ── */
+        .page-header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-header h2 { font-weight: 800; color: #1e293b; font-size: 26px; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+        .page-header p { color: #64748b; font-size: 14px; margin: 0; }
+        
+        .btn-refresh { background: white; color: #475569; border: 1px solid #cbd5e1; border-radius: 50px; padding: 8px 20px; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-refresh:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+
+        /* ── Tabel MBP Modern ── */
+        .card-table { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; overflow: hidden; padding: 10px 20px; }
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        
+        .table thead th { background-color: white; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 16px 15px; border-bottom: 2px solid #f1f5f9; border-top: none; letter-spacing: 0.8px; white-space: nowrap; }
+        .table tbody td { padding: 16px 15px; vertical-align: middle; border-bottom: 1px solid #f8fafc; font-size: 13.5px; color: #334155; }
+        .table tbody tr:hover { background-color: #fcfcfc; }
+        .table tbody tr:last-child td { border-bottom: none; }
+
+        /* ── Komponen Tabel ── */
+        .id-tag { font-weight: 800; color: #0f172a; font-size: 14px; display: block; margin-bottom: 2px; }
+        .cust-name { font-size: 12px; color: #64748b; }
+        
+        .prod-name { font-weight: 700; color: #1e293b; margin: 0 0 4px 0; font-size: 13.5px; }
+        .vol-badge { display: inline-block; border: 1px solid #e2e8f0; color: #64748b; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: #f8fafc; font-weight: 600; }
+
+        .method-text { font-weight: 600; color: #3b82f6; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+        .method-icon { font-size: 16px; }
+
+        .bukti-img { width: 45px; height: 35px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .bukti-img:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .no-bukti { width: 45px; height: 35px; border-radius: 6px; background: #f1f5f9; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 1px dashed #cbd5e1; }
+
+        /* ── Badge Status Order (Pastel) ── */
+        .badge-order { padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; text-transform: capitalize; display: inline-block; }
+        .o-selesai { background: #dcfce7; color: #16a34a; }
+        .o-diproses { background: #e0f2fe; color: #0284c7; }
+        .o-dikirim { background: #f3e8ff; color: #7e22ce; }
+        .o-dibatalkan { background: #fee2e2; color: #dc2626; }
+        .o-menunggu { background: #fef3c7; color: #d97706; }
+
+        /* ── Badge Status Bayar (Solid) ── */
+        .badge-bayar { padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; text-transform: capitalize; display: inline-block; }
+        .b-lunas { background: #059669; color: #ffffff; }
+        .b-refund { background: #06b6d4; color: #ffffff; }
+        .b-pending { background: #eab308; color: #ffffff; }
+        .b-expired { background: #64748b; color: #ffffff; }
+
+        /* ── Aksi Buttons ── */
+        .aksi-group { display: flex; align-items: center; gap: 8px; }
+        
+        .btn-eye { background: white; border: 1px solid #cbd5e1; color: #64748b; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; }
+        .btn-eye:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+
+        .btn-action { padding: 6px 16px; border-radius: 20px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; letter-spacing: 0.5px; transition: 0.2s; }
+        
+        /* State Tombol Dinamis */
+        .btn-terima { background: #16a34a; color: white; }
+        .btn-terima:hover { background: #15803d; }
+        
+        .btn-tolak { background: white; color: #dc2626; border: 1px solid #fca5a5; }
+        .btn-tolak:hover { background: #fef2f2; }
+
+        .btn-proses-hitam { background: #0f172a; color: white; }
+        .btn-proses-hitam:hover { background: #1e293b; }
+
+        .btn-disabled-gray { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .btn-disabled-red { background: #fee2e2; color: #f87171; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="page-header-container">
+            <div class="page-header">
+                <h2>Daftar Pesanan MBP</h2>
+                <p>Kelola verifikasi pembayaran dan status operasional.</p>
+            </div>
+            <a href="/penjualan/pesanan" class="btn-refresh">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </a>
+        </div>
+
+        <div class="card-table table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID / Pelanggan</th>
+                        <th>Produk & Vol</th>
+                        <th>Metode Bayar</th>
+                        <th>Bukti</th>
+                        <th>Status Order</th>
+                        <th>Status Bayar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof pesanan === 'undefined' || pesanan.length === 0) { %>
+                        <tr><td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-3 d-block mb-2"></i>Belum ada data pesanan.</td></tr>
+                    <% } else { %>
+                        <% pesanan.forEach(p => { 
+                            // 1. Logika Metode Pembayaran
+                            let metodeStr = p.metode_pembayaran ? p.metode_pembayaran.toLowerCase() : 'transfer';
+                            let iconBank = metodeStr.includes('kantor') ? 'bi-cash-coin' : 'bi-bank';
+                            let labelMetode = metodeStr.includes('kantor') ? 'Kantor' : 'Transfer';
+
+                            // 2. Logika Status Order (Badge Pastel)
+                            let sOrder = p.status_pesanan ? p.status_pesanan.toLowerCase() : 'menunggu_konfirmasi';
+                            let classOrder = 'o-menunggu';
+                            let textOrder = 'Menunggu';
+                            if (sOrder === 'diproses') { classOrder = 'o-diproses'; textOrder = 'Diproses'; }
+                            else if (sOrder === 'dikirim') { classOrder = 'o-dikirim'; textOrder = 'Dikirim'; }
+                            else if (sOrder === 'selesai') { classOrder = 'o-selesai'; textOrder = 'Selesai'; }
+                            else if (sOrder === 'dibatalkan' || sOrder === 'ditolak') { classOrder = 'o-dibatalkan'; textOrder = 'Dibatalkan'; }
+
+                            // 3. Logika Status Bayar (Badge Solid)
+                            let sBayar = p.status_bayar ? p.status_bayar.toLowerCase() : 'pending';
+                            let classBayar = 'b-pending';
+                            if (sBayar === 'lunas') classBayar = 'b-lunas';
+                            else if (sBayar === 'refund') classBayar = 'b-refund';
+                            else if (sBayar === 'expired') classBayar = 'b-expired';
+                        %>
+                            <tr>
+                                <td>
+                                    <span class="id-tag">#BT-<%= p.id %></span>
+                                    <span class="cust-name"><%= p.nama_pelanggan %></span>
+                                </td>
+
+                                <td>
+                                    <p class="prod-name"><%= p.nama_produk %></p>
+                                    <span class="vol-badge"><%= Number(p.volume).toFixed(2) %> m³</span>
+                                </td>
+
+                                <td>
+                                    <div class="method-text">
+                                        <i class="bi <%= iconBank %> method-icon"></i> <%= labelMetode %>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <% if (p.bukti_pembayaran) { %>
+                                        <a href="/uploads/<%= p.bukti_pembayaran %>" target="_blank" title="Lihat Bukti">
+                                            <img src="/uploads/<%= p.bukti_pembayaran %>" class="bukti-img" alt="Bukti">
+                                        </a>
+                                    <% } else { %>
+                                        <div class="no-bukti" title="Belum upload"><i class="bi bi-image"></i></div>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <span class="badge-order <%= classOrder %>"><%= textOrder %></span>
+                                </td>
+
+                                <td>
+                                    <span class="badge-bayar <%= classBayar %>"><%= p.status_bayar %></span>
+                                </td>
+
+                                <td>
+                                    <div class="aksi-group">
+                                        <a href="/penjualan/detail-pesanan/<%= p.id %>" class="btn-eye" title="Detail Pesanan">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <% if (sOrder === 'menunggu_konfirmasi') { %>
+                                            <form action="/penjualan/pesanan/approve/<%= p.id %>" method="POST" style="margin: 0;">
+                                                <button type="submit" class="btn-action btn-terima" onclick="return confirm('Terima pesanan ini?');">Terima</button>
+                                            </form>
+                                            <form action="/penjualan/pesanan/reject/<%= p.id %>" method="POST" style="margin: 0;">
+                                                <button type="submit" class="btn-action btn-tolak" style="padding: 5px 14px;" onclick="return confirm('Tolak pesanan ini?');">Tolak</button>
+                                            </form>
+                                            
+                                        <% } else if (sOrder === 'diproses' || sOrder === 'dikirim') { %>
+                                            <a href="/penjualan/pengiriman" class="btn-action btn-proses-hitam">Proses</a>
+                                            
+                                        <% } else if (sOrder === 'selesai') { %>
+                                            <button class="btn-action btn-disabled-gray" disabled>Selesai</button>
+                                            
+                                        <% } else if (sOrder === 'dibatalkan' || sOrder === 'ditolak') { %>
+                                            <button class="btn-action btn-disabled-red" disabled>Dibatalkan</button>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

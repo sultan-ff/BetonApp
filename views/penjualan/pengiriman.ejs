@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Pengiriman - Panel Penjualan MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #03ac0e; font-size: 18px; }
+        /* ========================================================================== */
+
+        /* ── Page header ── */
+        .page-header-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .page-header h2 { font-weight: 800; color: #14532d; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin: 0; }
+
+        .btn-laporan { background: #1e293b; color: #fff; border: none; border-radius: 50px; padding: 10px 24px; font-weight: 700; font-size: 13.5px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+        .btn-laporan:hover { background: #334155; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* ── Cards ── */
+        .card-custom { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin-bottom: 30px; overflow: visible; } /* Diubah ke visible agar dropdown tidak terpotong */
+        .card-header-mbp { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 18px 24px; display: flex; align-items: center; gap: 15px; border-radius: 16px 16px 0 0; }
+        .section-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        .icon-warning { background: #fef3c7; color: #b45309; }
+        .icon-success { background: #dcfce7; color: #15803d; }
+        .icon-secondary { background: #f1f5f9; color: #475569; }
+
+        /* ── Table ── */
+        .table-mbp { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        .table-mbp thead th { background: #f8fafc; color: #64748b; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding: 16px 20px; border-top: none; }
+        .table-mbp tbody td { padding: 16px 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 14px; }
+        .table-mbp tbody tr:hover { background: #f0fdf4; }
+
+        .id-tag { font-size: 11.5px; font-weight: 700; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; }
+
+        /* ── Status badges ── */
+        .badge-mutu { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+        .badge-terkirim { background: #dcfce7; color: #15803d; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid #bbf7d0; }
+
+        /* ── Truk info ── */
+        .truk-info .plat { font-weight: 700; color: #1e293b; font-size: 14px; }
+        .truk-info .sopir { font-size: 12px; color: #64748b; }
+
+        /* ── Buttons & Select ── */
+        .btn-kirim { background: #16a34a; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 13px; padding: 8px 18px; transition: 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; height: 38px; }
+        .btn-kirim:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(22,163,74,0.2); }
+
+        .btn-selesai { background: #1e293b; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 13px; padding: 8px 16px; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-selesai:hover { background: #334155; }
+
+        .btn-surat { background: transparent; border: 1px solid #0891b2; color: #0891b2; border-radius: 8px; font-weight: 700; font-size: 13px; padding: 7px 16px; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-surat:hover { background: #0891b2; color: #fff; }
+
+        /* Custom Dropdown Checkbox */
+        .dropdown-checkbox-menu { max-height: 200px; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-radius: 8px; }
+        .dropdown-toggle-custom { border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px; color: #334155; padding: 8px 12px; background-color: #f8fafc; text-align: left; display: flex; justify-content: space-between; align-items: center; height: 38px; }
+        .dropdown-toggle-custom:hover, .dropdown-toggle-custom:focus { border-color: #03ac0e; background-color: white; }
+
+        /* ── Empty state ── */
+        .empty-state { padding: 40px 20px; text-align: center; }
+        .empty-state i { font-size: 40px; color: #cbd5e1; display: block; margin-bottom: 10px; }
+        .empty-state p { color: #64748b; font-size: 14px; margin: 0; font-weight: 500; }
+
+        /* ── Accordion riwayat ── */
+        .accordion-item { border: 1px solid #e2e8f0; border-radius: 16px !important; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }
+        .accordion-button { font-weight: 700; font-size: 15px; color: #1e293b; background: #fff; padding: 20px 24px; box-shadow: none !important; }
+        .accordion-button:not(.collapsed) { color: #14532d; background: #f0fdf4; border-bottom: 1px solid #e2e8f0; }
+        .accordion-button::after { filter: invert(0); }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Penjualan' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px;">Penjualan</span>
+            </div>
+        </div>
+
+        <div class="page-header-container">
+            <div class="page-header">
+                <h2>Manajemen Pengiriman</h2>
+                <p>Kelola antrean pengiriman ready-mix dan pantau status armada secara real-time.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/penjualan/pengiriman/excel" class="btn-laporan" style="background: #15803d;">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </a>
+                <a href="/penjualan/pengiriman/cetak-pengiriman" target="_blank" class="btn-laporan">
+                    <i class="bi bi-printer"></i> Cetak PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="card-custom">
+            <div class="card-header-mbp">
+                <div class="section-icon icon-warning"><i class="bi bi-cone-striped"></i></div>
+                <div style="flex: 1;">
+                    <div class="fw-bold text-dark" style="font-size:16px;">Antrean Pengiriman</div>
+                    <div class="text-muted" style="font-size:13px;">Pesanan yang menunggu penugasan truk</div>
+                </div>
+                <% if (typeof antrean !== 'undefined' && antrean.length > 0) { %>
+                    <span class="badge" style="background:#fef3c7;color:#b45309;font-size:12px;padding:6px 14px;border-radius:20px;border: 1px solid #fde68a;">
+                        <%= antrean.length %> Menunggu
+                    </span>
+                <% } %>
+            </div>
+            
+            <div class="table-responsive" style="overflow: visible;">
+                <table class="table-mbp">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Pelanggan</th>
+                            <th>Mutu Beton</th>
+                            <th>Volume</th>
+                            <th style="width:450px;">Penugasan Truk (Pilih > 1)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof antrean === 'undefined' || antrean.length === 0) { %>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Belum ada antrean pesanan saat ini.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% antrean.forEach(item => { %>
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark" style="font-size: 15px;"><%= item.pelanggan %></div>
+                                    <div class="id-tag">#INV-<%= item.id %></div>
+                                </td>
+                                <td><span class="badge-mutu"><%= item.nama_produk %></span></td>
+                                <td>
+                                    <span class="fw-bold text-dark fs-6"><%= item.volume %></span>
+                                    <span class="text-muted small">m³</span>
+                                </td>
+                                <td>
+                                    <!-- Perhatikan name="id_truk[]" (pakai array) agar Controller bisa menangkap banyak ID -->
+                                    <form action="/penjualan/pengiriman/kirim" method="POST" class="d-flex gap-2 align-items-start">
+                                        <input type="hidden" name="id_pesanan" value="<%= item.id %>">
+                                        
+                                        <!-- DROPDOWN CHECKBOX MULTI-SELECT -->
+                                        <div class="dropdown flex-grow-1">
+                                            <button class="btn dropdown-toggle-custom w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                — Pilih Armada (Bisa > 1) —
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-checkbox-menu w-100 p-2">
+                                                <% if (typeof trucks !== 'undefined' && trucks.length > 0) { %>
+                                                    <!-- FIX 1: Pemanggilan nama variabel yang benar sesuai Controller (no_polisi & sopir) -->
+                                                    <% trucks.forEach(t => { %>
+                                                        <li>
+                                                            <label class="dropdown-item d-flex align-items-center gap-2" style="font-size: 13px; cursor: pointer; border-radius: 6px; padding: 8px 12px;">
+                                                                <input class="form-check-input mt-0" type="checkbox" name="id_truk[]" value="<%= t.id %>">
+                                                                <span class="fw-bold"><%= t.no_polisi %></span> 
+                                                                <span class="text-success fw-bold">(<%= t.kapasitas %>m³)</span> - <%= t.sopir %>
+                                                            </label>
+                                                        </li>
+                                                    <% }) %>
+                                                <% } else { %>
+                                                    <li><span class="dropdown-item text-muted text-center py-2" style="font-size: 13px;">Semua truk sedang beroperasi</span></li>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+
+                                        <button type="submit" class="btn-kirim">
+                                            <i class="bi bi-send-fill"></i> Kirim
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 2 & 3 tetap sama seperti sebelumnya, hanya memastikan pemanggilan t.no_polisi & t.sopir benar -->
+        <div class="card-custom">
+            <div class="card-header-mbp">
+                <div class="section-icon icon-success"><i class="bi bi-truck-flatbed"></i></div>
+                <div style="flex: 1;">
+                    <div class="fw-bold text-dark" style="font-size:16px;">Sedang Berjalan</div>
+                    <div class="text-muted" style="font-size:13px;">Truk yang sedang dalam perjalanan atau proses cor</div>
+                </div>
+                <% if (typeof sedangJalan !== 'undefined' && sedangJalan.length > 0) { %>
+                    <span class="badge" style="background:#dcfce7;color:#15803d;font-size:12px;padding:6px 14px;border-radius:20px;border: 1px solid #bbf7d0;">
+                        <i class="bi bi-circle-fill me-1" style="font-size:8px; animation: blink 2s infinite;"></i> <%= sedangJalan.length %> Aktif
+                    </span>
+                <% } %>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table-mbp">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Pelanggan & Lokasi Tujuan</th>
+                            <th>Armada Truk & Sopir</th>
+                            <th class="text-center">Aksi Operasional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof sedangJalan === 'undefined' || sedangJalan.length === 0) { %>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="empty-state">
+                                        <i class="bi bi-truck"></i>
+                                        <p>Tidak ada armada yang sedang aktif mengirim.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% sedangJalan.forEach(item => { %>
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark" style="font-size: 15px;"><%= item.pelanggan %></div>
+                                    <div class="text-muted small text-truncate" style="max-width:300px; margin-top: 4px;">
+                                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i><%= item.alamat_kirim %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="truk-info">
+                                        <!-- FIX 1: Pemanggilan no_polisi & sopir -->
+                                        <div class="plat"><i class="bi bi-truck me-1 text-muted"></i><%= item.no_polisi %></div>
+                                        <div class="sopir"><i class="bi bi-person-fill me-1"></i><%= item.sopir %></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="/penjualan/pengiriman/surat-jalan/<%= item.id %>/<%= item.id_truk %>" target="_blank" class="btn-surat">
+                                            <i class="bi bi-file-earmark-pdf"></i> Surat Jalan
+                                        </a>
+                                        <form action="/penjualan/pengiriman/selesai" method="POST" class="d-inline">
+                                            <input type="hidden" name="id_pesanan" value="<%= item.id %>">
+                                            <input type="hidden" name="id_truk" value="<%= item.id_truk %>">
+                                            <button type="submit" onclick="return confirm('Konfirmasi: Truk sudah kembali ke pabrik?')" class="btn-selesai">
+                                                <i class="bi bi-check2-circle"></i> Selesai
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="accordion" id="historyAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
+                        <div class="section-icon icon-secondary me-3"><i class="bi bi-clock-history"></i></div>
+                        <span style="flex: 1;">Riwayat Pengiriman Selesai</span>
+                        <span class="badge me-3" style="background:#f1f5f9;color:#64748b;font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid #e2e8f0; font-weight: 600;">Log Data</span>
+                    </button>
+                </h2>
+                <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#historyAccordion">
+                    <div class="accordion-body p-0">
+                        <div class="table-responsive">
+                            <table class="table-mbp">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">ID</th>
+                                        <th>Pelanggan</th>
+                                        <th>Mutu Beton</th>
+                                        <th>Armada Truk</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (typeof riwayatSelesai === 'undefined' || riwayatSelesai.length === 0) { %>
+                                        <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada riwayat pengiriman.</td></tr>
+                                    <% } else { %>
+                                        <% riwayatSelesai.forEach(item => { %>
+                                        <tr>
+                                            <td class="ps-4 id-tag">#INV-<%= item.id %></td>
+                                            <td class="fw-bold text-dark"><%= item.pelanggan %></td>
+                                            <td><span class="badge-mutu"><%= item.nama_produk %></span></td>
+                                            <!-- FIX 1: Pemanggilan no_polisi -->
+                                            <td class="truk-info"><span class="plat"><%= item.no_polisi %></span></td>
+                                            <td><span class="badge-terkirim"><i class="bi bi-check-lg me-1"></i> Terkirim</span></td>
+                                        </tr>
+                                        <% }) %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        /* Sedikit style tambahan agar hover checkbox lebih enak dilihat */
+        .dropdown-item:hover { background-color: #f0fdf4 !important; color: #14532d !important; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script kecil biar teks dropdown berubah saat kita milih beberapa truk -->
+    <script>
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const button = dropdown.querySelector('.dropdown-toggle-custom');
+            const checkboxes = dropdown.querySelectorAll('.form-check-input');
+            
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const selected = Array.from(checkboxes).filter(i => i.checked);
+                    if (selected.length === 0) {
+                        button.innerText = '— Pilih Armada (Bisa > 1) —';
+                    } else {
+                        button.innerText = selected.length + ' Truk Terpilih';
+                        button.style.fontWeight = 'bold';
+                        button.style.borderColor = '#03ac0e';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

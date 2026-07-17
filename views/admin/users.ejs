@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen User - Administrator MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #334155; font-size: 18px; } /* Warna icon netral untuk Admin */
+        /* ========================================================================== */
+
+        /* ── Header Halaman & Tombol ── */
+        .page-header-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .page-header h2 { font-weight: 800; color: #0f172a; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin: 0; }
+        
+        .btn-add { background: #0f172a; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 700; text-decoration: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-add:hover { background: #1e293b; color: white; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+
+        /* ── Tabel MBP Modern ── */
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-table-header { background: #fff; padding: 20px 24px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: #1e293b; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        .table thead th { background-color: #f8fafc; color: #64748b; font-size: 11.5px; font-weight: 700; text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; border-top: none; letter-spacing: 0.5px; }
+        .table tbody td { padding: 18px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .table tbody tr:hover { background-color: #fcfcfc; }
+
+        /* ── Komponen User ── */
+        .user-name { font-weight: 700; color: #1e293b; display: block; font-size: 14.5px; }
+        .user-email { color: #64748b; font-size: 13px; }
+        
+        /* Badges Role Dinamis */
+        .badge-role { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
+        .role-admin { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .role-gudang { background: #cffafe; color: #0891b2; border: 1px solid #a5f3fc; }
+        .role-penjualan { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .role-pembelian { background: #f3e8ff; color: #7c3aed; border: 1px solid #e9d5ff; }
+        .role-default { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* Tombol Aksi */
+        .action-group { display: flex; gap: 8px; }
+        .btn-icon { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s; border: 1px solid transparent; }
+        .btn-edit { background: #fef3c7; color: #d97706; border-color: #fde68a; }
+        .btn-edit:hover { background: #d97706; color: white; }
+        .btn-delete { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .btn-delete:hover { background: #dc2626; color: white; }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Administrator' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #475569; margin-left: 5px;">Admin Master</span>
+            </div>
+        </div>
+
+        <div class="page-header-container">
+            <div class="page-header">
+                <h2>Kelola Hak Akses User</h2>
+                <p>Manajemen akun karyawan PT Mitrabeton Perkasa berdasarkan divisi.</p>
+            </div>
+            
+            <a href="/admin/users/tambah" class="btn-add">
+                <i class="bi bi-person-plus-fill"></i> Tambah User Baru
+            </a>
+        </div>
+
+        <div class="card-table">
+            <div class="card-table-header">
+                <i class="bi bi-people-fill text-secondary"></i> Daftar Pengguna Sistem
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center;">ID</th>
+                            <th>Informasi Pengguna</th>
+                            <th>Hak Akses (Role)</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof users === 'undefined' || users.length === 0) { %>
+                            <tr><td colspan="4" class="text-center py-5 text-muted">Belum ada data user.</td></tr>
+                        <% } else { %>
+                            <% users.forEach(user => { 
+                                // Logika penentuan warna badge berdasarkan role
+                                let roleClass = 'role-default';
+                                const userRole = user.role.toLowerCase();
+                                
+                                if (userRole === 'admin') roleClass = 'role-admin';
+                                else if (userRole === 'gudang') roleClass = 'role-gudang';
+                                else if (userRole === 'penjualan') roleClass = 'role-penjualan';
+                                else if (userRole === 'pembelian') roleClass = 'role-pembelian';
+                            %>
+                            <tr>
+                                <td style="text-align: center; font-weight: 700; color: #64748b;"><%= user.id %></td>
+                                <td>
+                                    <span class="user-name"><%= user.nama %></span>
+                                    <span class="user-email"><%= user.email %></span>
+                                </td>
+                                <td>
+                                    <span class="badge-role <%= roleClass %>">
+                                        <i class="bi bi-shield-lock-fill me-1"></i> <%= user.role %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-group" style="justify-content: center;">
+                                        <a href="/admin/users/edit/<%= user.id %>" class="btn-icon btn-edit" title="Edit Data">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="/admin/users/hapus/<%= user.id %>" class="btn-icon btn-delete" title="Hapus User" onclick="return confirm('Peringatan: Yakin ingin menghapus akses untuk <%= user.nama %>? Data ini tidak dapat dikembalikan.')">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

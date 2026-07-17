@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Jalan #INV-<%= data.id %> - MBP</title>
+    <style>
+        /* CSS Khusus Layar & Kertas Print */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #525659; /* Latar belakang gelap ala PDF Viewer */
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .paper-container {
+            background-color: white;
+            width: 210mm; /* Standar lebar kertas A4 */
+            min-height: 140mm; /* Standar tinggi setengah A4 */
+            padding: 10mm 15mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            color: #000;
+        }
+
+        .header { text-align: center; border-bottom: 2px double #000; margin-bottom: 25px; padding-bottom: 15px; }
+        .header h1 { margin: 0; font-size: 26px; font-family: Arial, sans-serif; font-weight: 800; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0 0; font-size: 14px; }
+        
+        .info { display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 15px; line-height: 1.5; }
+        .info p { margin: 2px 0; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 15px; }
+        th, td { border: 1px solid #000; padding: 12px; text-align: left; }
+        th { font-weight: bold; }
+        
+        .ttd-container { display: flex; justify-content: space-between; text-align: center; margin-top: 50px; font-size: 15px; }
+        .ttd-box { width: 30%; }
+        .ttd-box p:last-child { margin-top: 70px; font-weight: bold; text-decoration: underline; }
+
+        /* Tombol Aksi */
+        .action-buttons { margin-bottom: 20px; display: flex; gap: 15px; }
+        .btn { padding: 10px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-family: Arial, sans-serif; display: flex; align-items: center; gap: 8px; }
+        .btn-print { background-color: #16a34a; color: white; }
+        .btn-print:hover { background-color: #15803d; }
+        .btn-back { background-color: #1e293b; color: white; }
+        .btn-back:hover { background-color: #0f172a; }
+
+        /* Logic saat dicolok ke Printer */
+        @media print {
+            body { background-color: white; padding: 0; display: block; }
+            .paper-container { width: 100%; min-height: auto; padding: 0; box-shadow: none; margin: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="action-buttons no-print">
+        <a href="/penjualan/pengiriman" class="btn btn-back">← Kembali ke Antrean</a>
+        <button onclick="window.print()" class="btn btn-print">🖨️ Cetak Surat Jalan</button>
+    </div>
+
+    <div class="paper-container">
+        <div class="header">
+            <h1>PT MITRABETON PERKASA</h1>
+            <p>Jl. Raya Industri Ready-Mix No. 123 | Telp: (021) 555-666</p>
+        </div>
+
+        <h3 style="text-align:center; text-decoration: underline; margin-bottom: 30px;">SURAT JALAN PENGIRIMAN BETON</h3>
+
+        <div class="info">
+            <div>
+                <p><strong>No. Tagihan :</strong> #INV-<%= data.id %></p>
+                <p><strong>Tgl. Pesan  :</strong> 
+                    <%= data.tgl_pesan ? new Date(data.tgl_pesan).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-' %>
+                </p>
+            </div>
+            <div style="text-align:right;">
+                <p><strong>Kepada Yth:</strong></p>
+                <p><strong><%= data.pelanggan %></strong></p>
+                <p>Telp: <%= data.nomor_telepon %></p>
+                <p style="max-width: 300px; text-align: right; margin-left: auto; margin-top: 5px;"><%= data.alamat_kirim %></p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Mutu Beton</th>
+                    <th>Volume Pesanan</th>
+                    <th>No. Plat Truk</th>
+                    <th>Nama Sopir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><%= data.nama_produk %></td>
+                    <td><%= data.volume %> m³</td>
+                    <td><%= data.no_polisi %></td>
+                    <td><%= data.sopir %></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="ttd-container">
+            <div class="ttd-box">
+                <p>Penerima / Proyek,</p>
+                <p>( .................... )</p>
+            </div>
+            <div class="ttd-box">
+                <p>Sopir Truk,</p>
+                <p>( <%= data.sopir %> )</p>
+            </div>
+            <div class="ttd-box">
+                <p>Petugas Logistik,</p>
+                <p>( <%= namaUser %> )</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Stok - Panel Gudang MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #0891b2; font-size: 18px; } /* Warna icon Cyan untuk Gudang */
+        /* ========================================================================== */
+
+        /* ── Header Halaman ── */
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-weight: 800; color: #164e63; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin: 0; }
+
+        /* ── Form Control Panel (Kartu Atas) ── */
+        .control-panel { background: white; border-radius: 16px; padding: 25px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        .panel-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .panel-title i { color: #0891b2; }
+        
+        .form-label { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; display: block; }
+        .form-control, .form-select { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background-color: #f8fafc; color: #1e293b; transition: 0.2s; }
+        .form-control:focus, .form-select:focus { border-color: #0891b2; outline: none; background-color: white; box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15); }
+        
+        .btn-submit { background: #0891b2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; height: 42px; margin-top: 27px; width: 100%; }
+        .btn-submit:hover { background: #0e7490; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(8, 145, 178, 0.2); }
+
+        /* ── Tabel MBP Modern ── */
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-table-header { background: #fff; padding: 20px 24px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: #1e293b; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        .table thead th { background-color: #f8fafc; color: #64748b; font-size: 11.5px; font-weight: 700; text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; border-top: none; letter-spacing: 0.5px; }
+        .table tbody td { padding: 18px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .table tbody tr:hover { background-color: #fcfcfc; }
+        
+        /* ── Komponen Progress & Status ── */
+        .material-name { font-weight: 700; color: #0f172a; font-size: 14.5px; }
+        
+        .progress-wrapper { width: 100%; max-width: 200px; display: flex; align-items: center; gap: 10px; }
+        .progress { height: 8px; border-radius: 10px; background-color: #e2e8f0; flex-grow: 1; overflow: visible; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+        .progress-bar { border-radius: 10px; transition: width 0.5s ease; }
+        .progress-text { font-size: 12px; font-weight: 700; color: #64748b; width: 45px; text-align: right; }
+        
+        .stok-number { font-weight: 800; font-size: 16px; color: #1e293b; }
+        .satuan { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: 5px; }
+
+        .badge-status { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.5px; }
+        .status-aman { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .status-kritis { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        
+        .min-stok-info { display: block; font-size: 11.5px; color: #94a3b8; font-weight: 500; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Gudang' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px;">Gudang</span>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h2>Manajemen Stok Ready-Mix</h2>
+            <p>Catat penambahan barang masuk dan pantau ketersediaan stok di silo gudang.</p>
+        </div>
+
+        <div class="control-panel">
+            <div class="panel-title">
+                <i class="bi bi-box-arrow-in-down"></i> Input Penambahan Stok
+            </div>
+            
+            <form action="/gudang/update-stok" method="POST">
+                <div class="row gx-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Jenis Mutu Beton</label>
+                        <select name="id" class="form-select" required>
+                            <option value="" disabled selected>— Pilih Mutu Beton —</option>
+                            <% if (typeof produkStok !== 'undefined') { %>
+                                <% produkStok.forEach(p => { %>
+                                    <option value="<%= p.id %>"><%= p.nama_produk %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Volume (m³)</label>
+                        <input type="number" name="jumlah_masuk" class="form-control" placeholder="0" min="1" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Keterangan / Catatan</label>
+                        <input type="text" name="keterangan" class="form-control" placeholder="Contoh: Produksi shift pagi..." autocomplete="off">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-floppy-fill"></i> Simpan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-table">
+            <div class="card-table-header">
+                <i class="bi bi-layers-half text-info"></i> Daftar Stok Barang Jadi
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nama Material</th>
+                            <th>Kapasitas Silo / Gudang</th>
+                            <th>Sisa Stok Saat Ini</th>
+                            <th>Status Keamanan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof produkStok === 'undefined' || produkStok.length === 0) { %>
+                            <tr><td colspan="4" class="text-center py-5 text-muted"><i class="bi bi-box-seam fs-2 d-block mb-2"></i>Belum ada data stok produk.</td></tr>
+                        <% } else { %>
+                            <% produkStok.forEach(p => { 
+                                // Asumsi kapasitas maksimal gudang per produk adalah 1000 m³
+                                const MAX_KAPASITAS = 1000;
+                                let persentase = (p.stok / MAX_KAPASITAS) * 100;
+                                if(persentase > 100) persentase = 100;
+                                if(persentase < 0) persentase = 0;
+                                
+                                // Penentuan logic Kritis / Aman
+                                let isKritis = p.stok <= p.stok_minimum;
+                                let barColor = isKritis ? 'bg-danger' : 'bg-success';
+                            %>
+                            <tr>
+                                <td>
+                                    <span class="material-name"><%= p.nama_produk %></span>
+                                </td>
+                                <td>
+                                    <div class="progress-wrapper">
+                                        <div class="progress">
+                                            <div class="progress-bar <%= barColor %>" role="progressbar" style="width: <%= persentase %>%;" aria-valuenow="<%= persentase %>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="progress-text"><%= Math.round(persentase) %>%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="stok-number"><%= Number(p.stok).toLocaleString('id-ID') %></span>
+                                    <span class="satuan">m³</span>
+                                </td>
+                                <td>
+                                    <% if (isKritis) { %>
+                                        <span class="badge-status status-kritis"><i class="bi bi-exclamation-triangle-fill"></i> Kritis</span>
+                                    <% } else { %>
+                                        <span class="badge-status status-aman"><i class="bi bi-shield-check"></i> Aman</span>
+                                    <% } %>
+                                    <span class="min-stok-info">Batas min: <%= p.stok_minimum %> m³</span>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

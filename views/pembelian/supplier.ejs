@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kelola Supplier - MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; }
+        .admin-profile i { color: #8b5cf6; font-size: 18px; }
+
+        .page-header h2 { font-weight: 800; color: #4c1d95; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin-bottom: 30px; }
+
+        /* Panel Form */
+        .control-panel { background: white; border-radius: 16px; padding: 25px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        .form-label { font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; display: block; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background-color: #f8fafc; transition: 0.2s; }
+        .form-control:focus { border-color: #8b5cf6; outline: none; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15); background: white; }
+        .btn-submit { background: #8b5cf6; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; height: 42px; margin-top: 27px; width: 100%; }
+        .btn-submit:hover { background: #7c3aed; transform: translateY(-1px); }
+
+        /* Tabel */
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-table-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; font-weight: 700; color: #1e293b; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .card-table-header i { color: #8b5cf6; }
+        .table { width: 100%; margin-bottom: 0; }
+        .table thead th { background-color: #f8fafc; color: #64748b; font-size: 11.5px; font-weight: 700; text-transform: uppercase; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; border-top: none; }
+        .table tbody td { padding: 18px 24px; vertical-align: middle; font-size: 14px; color: #334155; }
+        .btn-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; text-decoration: none; display: inline-block; }
+        .btn-delete:hover { background: #dc2626; color: white; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/sidebar', { role: role }) %>
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i> <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Pembelian' %>
+            </div>
+        </div>
+        <div class="page-header">
+            <h2>Manajemen Supplier Vendor</h2>
+            <p>Kelola data pabrik atau mitra penyedia produk jadi Ready-Mix.</p>
+        </div>
+
+        <div class="control-panel">
+            <form action="/pembelian/supplier/tambah" method="POST">
+                <div class="row gx-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Nama Supplier / PT</label>
+                        <input type="text" name="nama_supplier" class="form-control" placeholder="Contoh: PT Beton Kokoh..." required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nomor Kontak (No. HP/Telp)</label>
+                        <input type="text" name="kontak" class="form-control" placeholder="0812..." required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Kota / Alamat</label>
+                        <input type="text" name="alamat" class="form-control" placeholder="Kudus, Jawa Tengah" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn-submit"><i class="bi bi-plus-lg"></i> Tambah</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-table">
+            <div class="card-table-header"><i class="bi bi-buildings"></i> Daftar Rekanan Supplier</div>
+            <table class="table">
+                <thead><tr><th>ID</th><th>Nama Perusahaan</th><th>Kontak</th><th>Alamat Lengkap</th><th style="text-align:center;">Aksi</th></tr></thead>
+                <tbody>
+                    <% if (listSupplier.length === 0) { %>
+                        <tr><td colspan="5" class="text-center py-4">Belum ada data supplier.</td></tr>
+                    <% } else { %>
+                        <% listSupplier.forEach(s => { %>
+                        <tr>
+                            <td style="font-weight: bold; color: #8b5cf6;">#SUP-<%= s.id %></td>
+                            <td style="font-weight: bold;"><%= s.nama_supplier %></td>
+                            <td><%= s.kontak %></td>
+                            <td><%= s.alamat %></td>
+                            <td style="text-align:center;">
+                                <a href="/pembelian/supplier/hapus/<%= s.id %>" class="btn-delete" onclick="return confirm('Yakin ingin menghapus supplier ini?')">Hapus</a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

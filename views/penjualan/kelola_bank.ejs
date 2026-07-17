@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Rekening Bank - Panel Penjualan MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #03ac0e; font-size: 18px; }
+        /* ========================================================================== */
+
+        .page-header-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .page-header h2 { font-weight: 800; color: #14532d; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin: 0; }
+
+        /* Card Custom untuk Form dan Table */
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px; }
+        .card-header-custom { background-color: #f8fafc; color: #1e293b; font-weight: 700; padding: 18px 20px; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
+        .card-body-custom { padding: 20px; }
+        
+        /* Form Styling */
+        .form-label { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px;}
+        .form-control { border-radius: 8px; padding: 10px 15px; border: 1px solid #cbd5e1; font-size: 14px; }
+        .form-control:focus { border-color: #16a34a; box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.15); }
+        .btn-submit { background: #16a34a; color: white; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; border: none; width: 100%; transition: 0.2s; box-shadow: 0 4px 6px rgba(22, 163, 74, 0.2); }
+        .btn-submit:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(22, 163, 74, 0.3); }
+
+        /* Table Styling */
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        .table thead th { background-color: #f8fafc; color: #475569; font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 18px 20px; border-bottom: 1px solid #e2e8f0; border-top: none; letter-spacing: 0.5px; }
+        .table tbody td { padding: 18px 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .table tbody tr:hover { background-color: #f0fdf4; }
+        
+        /* Status Badge */
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
+        .bg-aktif { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+        /* Delete Button */
+        .btn-delete { background: #fee2e2; color: #b91c1c; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-delete:hover { background: #dc2626; color: white; }
+
+        @media (max-width: 992px) {
+            .main-content { margin-left: 0; width: 100%; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <!-- Topbar Persis Kelola Truk -->
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Penjualan' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px;">Penjualan</span>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="page-header-container">
+            <div class="page-header">
+                <h2>Kelola Rekening Bank</h2>
+                <p>Tambahkan dan atur rekening tujuan transfer untuk halaman checkout pelanggan.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- KOLOM KIRI: Form Tambah Rekening -->
+            <div class="col-lg-4 mb-4">
+                <div class="card-table">
+                    <div class="card-header-custom">
+                        <i class="bi bi-plus-lg me-1"></i> Tambah Bank Baru
+                    </div>
+                    <div class="card-body-custom">
+                        <form action="/penjualan/bank/add" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label">Nama Bank</label>
+                                <input type="text" name="nama_bank" class="form-control" placeholder="Contoh: BCA / BNI / Mandiri" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nomor Rekening</label>
+                                <input type="number" name="nomor_rekening" class="form-control" placeholder="Ketik angka rekening..." required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Atas Nama (Pemilik)</label>
+                                <input type="text" name="nama_pemilik" class="form-control" placeholder="Contoh: PT Mitrabeton Perkasa" required>
+                            </div>
+                            <button type="submit" class="btn-submit">
+                                Simpan Rekening
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: Tabel Daftar Rekening -->
+            <div class="col-lg-8">
+                <div class="card-table table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Informasi Bank</th>
+                                <th>Atas Nama</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof banks === 'undefined' || banks.length === 0) { %>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                        <i class="bi bi-bank fs-1 d-block mb-2"></i>
+                                        Belum ada data rekening bank.
+                                    </td>
+                                </tr>
+                            <% } else { %>
+                                <% banks.forEach(bank => { %>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark fs-6"><%= bank.nama_bank %></div>
+                                        <div class="text-muted" style="font-size: 13px;"><%= bank.nomor_rekening %></div>
+                                    </td>
+                                    <td class="fw-bold" style="color: #334155;">
+                                        <%= bank.nama_pemilik %>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="status-badge bg-aktif">
+                                            <%= bank.status %>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <form action="/penjualan/bank/delete/<%= bank.id %>" method="POST" onsubmit="return confirm('Hapus rekening <%= bank.nama_bank %> ini?');">
+                                            <button type="submit" class="btn-delete">
+                                                <i class="bi bi-trash"></i> Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
