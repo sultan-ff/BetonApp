@@ -92,7 +92,7 @@ const pelangganController = {
             }
 
             // Gabungkan kabupaten dan detail alamat
-            const alamat_pengiriman_lengkap = `${kabupaten} - ${alamat_pengiriman}`;
+            const alamat_pengiriman = `${kabupaten} - ${alamat_pengiriman}`;
             const total_harga = vol * parseInt(harga_satuan);
             const user_id = req.session.userId;
             
@@ -102,7 +102,7 @@ const pelangganController = {
             // Simpan pesanan ke database
             const pesananId = await PesananModel.buatPesanan(
                 user_id, produk_id, vol, total_harga, metode_pembayaran, 
-                alamat_pengiriman_lengkap, nomor_telepon, rekening_refund, waktu_pengiriman, file_bukti
+                alamat_pengiriman, nomor_telepon, rekening_refund, waktu_pengiriman, file_bukti
             );
             
             res.redirect('/pelanggan/detail-pesanan/' + pesananId);
