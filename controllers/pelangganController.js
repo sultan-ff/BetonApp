@@ -59,9 +59,11 @@ const pelangganController = {
     // 4. Proses Simpan Orderan (Diperbarui dengan Validasi Jam Operasional)
     checkoutProcess: async (req, res) => {
         try {
+            // PERBAIKAN: Beri alias "alamat_detail" untuk alamat_pengiriman dari form
+            // Biar nama variabelnya tidak bentrok di bawah nanti.
             const { 
                 produk_id, volume, harga_satuan, metode_pembayaran, 
-                kabupaten, alamat_pengiriman, nomor_telepon, rekening_refund, waktu_pengiriman 
+                kabupaten, alamat_pengiriman: alamat_detail, nomor_telepon, rekening_refund, waktu_pengiriman 
             } = req.body;
             
             // VALIDASI 1: Volume harus kelipatan 7
@@ -73,7 +75,8 @@ const pelangganController = {
             // VALIDASI 2: Wilayah Kabupaten
             const kabupatenValid = ['Kabupaten Kudus', 'Kabupaten Jepara'];
             if (!kabupatenValid.includes(kabupaten)) {
-                return res.send('<script>alert("Area pengiriman saat ini hanya mencakup Kab. Kudus dan Kab. Demak!"); window.history.back();</script>');
+                // (Gw benerin teks alert-nya dikit biar sinkron sama validasi array lu)
+                return res.send('<script>alert("Area pengiriman saat ini hanya mencakup Kab. Kudus dan Kab. Jepara!"); window.history.back();</script>');
             }
 
             // VALIDASI 3: Pengecekan H-10
@@ -84,22 +87,22 @@ const pelangganController = {
                 return res.send('<script>alert("Pemesanan gagal! Jadwal pengecoran minimal 10 hari dari hari ini."); window.history.back();</script>');
             }
 
-            // TAMBAHKAN VALIDASI 4 DI SINI: Cek Jam Operasional (09:00 - 17:00 WIB)
+            // VALIDASI 4: Cek Jam Operasional (09:00 - 17:00 WIB)
             const jamKirim = jadwalKirim.getHours();
             const menitKirim = jadwalKirim.getMinutes();
             if (jamKirim < 9 || jamKirim > 17 || (jamKirim === 17 && menitKirim > 0)) {
                 return res.send('<script>alert("Pemesanan gagal! Jam operasional kiriman hanya melayani pukul 09:00 s/d 17:00 WIB."); window.history.back();</script>');
             }
 
-            // Gabungkan kabupaten dan detail alamat
-            const alamat_pengiriman = `${kabupaten} - ${alamat_pengiriman}`;
+            // PERBAIKAN: Sekarang kita bebas pakai nama alamat_pengiriman untuk dikirim ke database
+            const alamat_pengiriman = `${kabupaten} - ${alamat_detail}`;
             const total_harga = vol * parseInt(harga_satuan);
             const user_id = req.session.userId;
             
             // Tangkap file upload (jika ada)
             const file_bukti = req.file ? req.file.filename : null;
 
-            // Simpan pesanan ke database
+            // Simpan pesanan ke database (sesuai dengan kolom entitas database)
             const pesananId = await PesananModel.buatPesanan(
                 user_id, produk_id, vol, total_harga, metode_pembayaran, 
                 alamat_pengiriman, nomor_telepon, rekening_refund, waktu_pengiriman, file_bukti
@@ -111,6 +114,7 @@ const pelangganController = {
             res.send('Gagal membuat pesanan');
         }
     },
+
     // 5. Halaman Detail Pesanan (Invoice)
     detailPesananView: async (req, res) => {
         try {
