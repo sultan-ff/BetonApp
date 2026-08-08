@@ -1,0 +1,71 @@
+<%- include('../partials/header-pelanggan') %>
+
+<style>
+    /* Container Utama khusus Katalog */
+    .katalog-container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+    
+    /* Search Bar */
+    .search-box { display: flex; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #eee; }
+    .search-box input { flex: 1; padding: 15px 20px; border: none; outline: none; font-size: 15px; }
+    .search-box button { background: #03ac0e; color: white; border: none; padding: 0 30px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
+    .search-box button:hover { background: #028a0b; }
+    
+    /* Banner */
+    .banner { background: linear-gradient(135deg, #86efac, #16a34a); padding: 40px; border-radius: 12px; color: white; margin-bottom: 40px; box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3); }
+    .banner h2 { margin: 0 0 10px 0; font-size: 28px; font-weight: 700; }
+    .banner p { margin: 0; font-size: 16px; opacity: 0.9; }
+    
+    /* Grid Produk */
+    .section-title { margin-bottom: 20px; font-size: 22px; color: #1f2937; font-weight: 600; }
+    .grid-katalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+    
+    /* Card Produk */
+    .katalog-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; border: 1px solid #f3f4f6; transition: transform 0.2s; display: flex; flex-direction: column; }
+    .katalog-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+    .katalog-card .kategori-badge { position: absolute; top: 20px; left: 20px; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #bbf7d0; }
+    .katalog-card img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 15px; border-radius: 8px; }
+    .katalog-card .title { margin: 0 0 5px 0; font-size: 16px; color: #374151; font-weight: 600; }
+    .katalog-card .price { margin: 0 0 15px 0; font-size: 20px; font-weight: bold; color: #ea580c; }
+    .katalog-card .unit { font-size: 12px; color: #9ca3af; font-weight: normal; }
+    
+    /* Tombol Detail */
+    .btn-detail { margin-top: auto; display: block; text-align: center; background: #03ac0e; color: white; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: bold; transition: 0.2s; }
+    .btn-detail:hover { background: #028a0b; color: white; }
+</style>
+
+<div class="katalog-container">
+    <div class="search-box">
+        <input type="text" placeholder="Cari mutu beton atau alat (contoh: K-300)...">
+        <button>Cari</button>
+    </div>
+
+    <div class="banner">
+        <h2>Pesan Beton Jadi Lebih Mudah!</h2>
+        <p>Kualitas terjamin untuk segala kebutuhan proyek konstruksi Anda. Harga sudah termasuk PPN.</p>
+    </div>
+
+    <h3 class="section-title">Katalog Produk MBP</h3>
+
+    <div class="grid-katalog">
+        <% produk.forEach(p => { %>
+            <div class="katalog-card">
+                <span class="kategori-badge"><%= p.nama_kategori %></span>
+                
+                <% if(p.foto) { %>
+                    <img src="/uploads/<%= p.foto %>" alt="<%= p.nama_produk %>">
+                <% } else { %>
+                    <div style="width: 100%; height: 160px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; border-radius: 8px; margin-bottom: 15px;">Tanpa Gambar</div>
+                <% } %>
+                
+                <h4 class="title"><%= p.nama_produk %></h4>
+                <p class="price">Rp <%= Number(p.harga).toLocaleString('id-ID') %> <span class="unit">/ m³</span></p>
+                
+                <a href="/pelanggan/produk/<%= p.id %>" class="btn-detail">Lihat Detail Produk</a>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

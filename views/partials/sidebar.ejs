@@ -1,0 +1,181 @@
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    /* CSS Sidebar Struktur Presisi */
+    .sidebar {
+        width: 260px;
+        background-color: #14532d; /* Hijau Gelap MBP */
+        color: white;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        overflow-y: auto;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+        z-index: 1000;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Area Brand / Logo */
+    .sidebar-brand {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sidebar-brand h3 { margin: 0; font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+    
+    /* Pembungkus Menu Area (Scrollable) */
+    .sidebar-menu {
+        flex: 1;
+        padding: 20px 0; /* Jarak atas-bawah menu utama */
+    }
+
+    /* KUNCI FIX: Kotak pembungkus per kelompok menu */
+    .menu-section {
+        margin-bottom: 20px; /* Jarak antar kelompok menu dijamin konstan */
+    }
+    
+    /* Label Kategori Judul */
+    .kategori-menu {
+        padding: 0 25px 8px 25px; /* Spacing bawah ke menu link */
+        font-size: 11px;
+        color: #86efac;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        opacity: 0.8;
+    }
+    
+    /* Item Menu Link */
+    .sidebar a.nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 25px; /* Lebar klik & tinggi baris seimbang */
+        color: #dcfce7;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .sidebar a.nav-item i { font-size: 18px; opacity: 0.8; }
+    
+    /* Efek Aktif & Hover */
+    .sidebar a.nav-item:hover, .sidebar a.nav-item.active {
+        background-color: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+        border-left-color: #03ac0e; /* Batas garis hijau terang */
+    }
+    .sidebar a.nav-item:hover i, .sidebar a.nav-item.active i { opacity: 1; color: #03ac0e; }
+    
+    /* Footer Logout Area */
+    .logout-wrapper {
+        padding: 15px 0 25px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sidebar a.nav-logout { color: #fca5a5; }
+    .sidebar a.nav-logout:hover { background-color: rgba(239, 68, 68, 0.08); border-left-color: #ef4444; color: #f87171; }
+    .sidebar a.nav-logout:hover i { color: #ef4444; }
+</style>
+
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <i class="bi bi-buildings-fill" style="font-size: 24px; color: #03ac0e;"></i>
+        <h3>Mitrabeton</h3>
+    </div>
+    
+    <div class="sidebar-menu">
+        <% if (role === 'admin') { %>
+            <div class="menu-section">
+                <div class="kategori-menu">Utama</div>
+                <a href="/admin/dashboard" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Pengguna</div>
+                <a href="/admin/users" class="nav-item"><i class="bi bi-people-fill"></i> Kelola User</a>
+            </div>
+        <% } %>
+        
+        <% if (role === 'penjualan') { %>
+            <div class="menu-section">
+                <div class="kategori-menu">Utama</div>
+                <a href="/penjualan/dashboard" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Katalog</div>
+                <a href="/penjualan/kategori" class="nav-item"><i class="bi bi-tags-fill"></i> Kelola Kategori</a>
+                <a href="/penjualan/produk" class="nav-item"><i class="bi bi-box-seam-fill"></i> Kelola Produk</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Transaksi</div>
+                <a href="/penjualan/pesanan" class="nav-item"><i class="bi bi-cart-check-fill"></i> Daftar Pesanan</a>
+                <a href="/penjualan/bank" class="nav-item"><i class="bi bi-bank"></i> Kelola Rekening </a>
+            </div>
+            <!-- Tambahkan ini di bawah menu Transaksi -->
+            <div class="menu-section">
+                <div class="kategori-menu">Operasional Armada</div>
+                <a href="/penjualan/truk" class="nav-item"><i class="bi bi-truck-front-fill"></i> Kelola Truk</a>
+                <a href="/penjualan/pengiriman" class="nav-item"><i class="bi bi-geo-alt-fill"></i> Jadwal Pengiriman</a>
+            </div>
+        <% } %>
+
+        <% if (role === 'gudang') { %>
+            <div class="menu-section">
+                <div class="kategori-menu">Utama</div>
+                <a href="/gudang/dashboard" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Stok</div>
+                <a href="/gudang/cek-stok" class="nav-item"><i class="bi bi-boxes"></i> Cek & Kelola Stok</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Order & Pembelian</div>
+                <a href="/gudang/terbitkan-po" class="nav-item"><i class="bi bi-file-earmark-text-fill"></i> Pengajuan PO</a>
+                
+                <a href="/gudang/penerimaan" class="nav-item"><i class="bi bi-box-arrow-in-down"></i> Penerimaan Barang</a>
+            </div>
+
+            <div class="menu-section">
+                <div class="kategori-menu">Laporan</div>
+                <a href="/gudang/laporan-stok" class="nav-item"><i class="bi bi-clock-history"></i> Histori Stok</a>
+            </div>
+        <% } %>
+        <% if (role === 'pembelian') { %>
+            <div class="menu-section">
+                <div class="kategori-menu">Utama</div>
+                <a href="/pembelian/dashboard" class="nav-item"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="kategori-menu">Procurement</div>
+                <a href="/pembelian/permintaan" class="nav-item"><i class="bi bi-ui-checks"></i> Persetujuan PO</a>
+            </div>
+
+            <div class="menu-section">
+                <div class="kategori-menu">Data Master</div>
+                <a href="/pembelian/supplier" class="nav-item"><i class="bi bi-buildings-fill"></i> Kelola Supplier</a>
+            </div>
+
+            <div class="menu-section">
+                <div class="kategori-menu">Laporan</div>
+                <a href="/pembelian/laporan" class="nav-item"><i class="bi bi-file-earmark-bar-graph-fill"></i> Histori Pembelian</a>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="logout-wrapper">
+        <a href="/logout" class="nav-item nav-logout"><i class="bi bi-box-arrow-left"></i> Keluar Akun</a>
+    </div>
+</div>

@@ -1,0 +1,305 @@
+<%- include('../partials/header-pelanggan') %>
+
+<style>
+    /* Container Utama Khusus Checkout */
+    .checkout-container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+    
+    /* Navigasi Breadcrumb Custom */
+    .custom-breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 20px; display: flex; align-items: center; gap: 5px; }
+    .custom-breadcrumb a { color: #64748b; text-decoration: none; transition: 0.2s; }
+    .custom-breadcrumb a:hover { color: #03ac0e; }
+    .custom-breadcrumb span { color: #0f172a; font-weight: 600; }
+    
+    /* Card Checkout Utama */
+    .card-checkout { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+    .header-title { display: flex; align-items: center; gap: 10px; color: #14532d; font-size: 22px; font-weight: bold; margin: 0 0 5px 0; }
+    .header-sub { color: #64748b; font-size: 13px; margin-bottom: 30px; }
+    
+    /* Box Info Produk */
+    .product-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+    .product-icon { width: 50px; height: 50px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #03ac0e; }
+    .product-box h3 { margin: 0 0 5px 0; font-size: 18px; color: #0f172a; font-weight: 700; }
+    .kategori-badge { background: #dcfce7; color: #03ac0e; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #bbf7d0; }
+
+    /* Judul per Section */
+    .section-title { font-size: 12px; font-weight: bold; color: #14532d; letter-spacing: 1px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin: 35px 0 20px 0; text-transform: uppercase; }
+    
+    /* Form Styling */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px; }
+    .form-control { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; outline: none; transition: border 0.2s; }
+    .form-control:focus { border-color: #03ac0e; }
+    
+    .input-group-custom { display: flex; align-items: center; }
+    .input-group-custom input { border-radius: 8px 0 0 8px; border-right: none; }
+    .input-group-custom .addon { background: #f1f5f9; padding: 12px 20px; border: 1px solid #cbd5e1; border-radius: 0 8px 8px 0; font-weight: bold; color: #0f172a; }
+
+    /* Box Transfer & Bank */
+    .transfer-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-top: 15px; }
+    .bank-info { background: #f0fdf4; border: 1px dashed #03ac0e; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-copy { background: white; border: 1px solid #03ac0e; color: #03ac0e; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .btn-copy:hover { background: #03ac0e; color: white; }
+    
+    /* Total Box Bawah */
+    .total-box { background: #03ac0e; color: white; text-align: center; padding: 30px; border-radius: 12px; margin-top: 40px; box-shadow: 0 10px 15px -3px rgba(3, 172, 14, 0.3); }
+    .total-box h4 { margin: 0 0 10px 0; font-size: 13px; font-weight: normal; opacity: 0.9; }
+    .total-box h2 { margin: 0 0 10px 0; font-size: 36px; font-weight: 700; }
+    .total-box p { margin: 0; font-size: 13px; opacity: 0.9; }
+    
+    .btn-submit { width: 100%; background: #03ac0e; color: white; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+    .btn-submit:hover { background: #028a0b; }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+    
+    @media (max-width: 768px) {
+        .card-checkout { padding: 20px; }
+    }
+</style>
+
+<div class="checkout-container">
+    <div class="custom-breadcrumb">
+        <a href="/pelanggan/katalog"><i class="bi bi-house-door-fill"></i> Katalog</a> / 
+        <a href="/pelanggan/produk/<%= produk.id %>">Detail Produk</a> / 
+        <span>Checkout</span>
+    </div>
+
+    <div class="card-checkout">
+        <form action="/pelanggan/checkout" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="produk_id" value="<%= produk.id %>">
+            <input type="hidden" id="harga_satuan" name="harga_satuan" value="<%= produk.harga %>">
+
+            <h1 class="header-title"><i class="bi bi-cart-check-fill"></i> Konfirmasi Pesanan</h1>
+            <p class="header-sub">Lengkapi form di bawah ini untuk memproses pesanan Anda.</p>
+
+            <div class="product-box">
+                <div class="product-icon"><i class="bi bi-truck"></i></div>
+                <div>
+                    <h3><%= produk.nama_produk %></h3>
+                    <span class="kategori-badge"><%= produk.nama_kategori %></span>
+                </div>
+            </div>
+
+            <div class="section-title">1. Kuantitas Pesanan</div>
+            <div class="form-group">
+                <label>Volume yang Dipesan (m³)</label>
+                <div class="input-group-custom">
+                    <!-- step="7" memastikan hanya bisa naik/turun kelipatan 7 -->
+                    <input type="number" id="volume" name="volume" class="form-control" min="7" step="7" value="7" placeholder="Contoh: 7, 14, 21..." required oninput="hitungTotal(); validasiVolume();">
+                    <div class="addon">m³</div>
+                </div>
+                <small id="errorVolume" style="color: #dc2626; font-size: 11px; margin-top: 5px; display: none;"><i class="bi bi-x-circle-fill"></i> Volume harus kelipatan 7 m³ (Kapasitas 1 Truk Mixer).</small>
+                <small style="color: #64748b; font-size: 11px; margin-top: 5px; display: block;"><i class="bi bi-info-circle"></i> Pemesanan wajib kelipatan 7 m³ (7, 14, 21, dst).</small>
+            </div>
+
+            <div class="section-title">2. Informasi Pengiriman & Kontak</div>
+            <div class="form-group">
+                <label>Pilih Kabupaten (Area Layanan)</label>
+                <select name="kabupaten" class="form-control" required>
+                    <option value="" disabled selected>— Pilih Kabupaten —</option>
+                    <option value="Kabupaten Kudus">Kabupaten Kudus</option>
+                    <option value="Kabupaten Demak">Kabupaten Jepara</option>
+                </select>
+                <small style="color: #64748b; font-size: 11px; margin-top: 5px; display: block;">*Layanan pengiriman kami saat ini terbatas pada area di atas.</small>
+            </div>
+            <div class="form-group">
+                <label>Detail Alamat Proyek Pengecoran</label>
+                <textarea name="alamat_detail" class="form-control" rows="3" placeholder="Sebutkan nama jalan, RT/RW, desa/kecamatan, atau patokan lokasi..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Nomor Telepon / WhatsApp (Aktif)</label>
+                <input type="text" name="nomor_telepon" class="form-control" placeholder="Contoh: 08123456789" required>
+            </div>
+            <div class="form-group">
+                <label>Nomor Rekening (Untuk Kebutuhan Refund)</label>
+                <input type="text" name="rekening_refund" class="form-control" placeholder="Contoh: BCA - 123456789 a/n Budi" required>
+            </div>
+
+            <div class="section-title">3. Jadwal Operasional</div>
+            <div class="form-group">
+                <label>Estimasi Waktu Mulai Pengecoran</label>
+                <input type="datetime-local" id="waktu_pengiriman" name="waktu_pengiriman" class="form-control" min="<%= minDate %>" required>
+                <small style="color: #dc2626; font-size: 11.5px; margin-top: 5px; display: block;">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Pengecoran minimal H-10 dari hari ini. Jam operasional pengiriman hanya melayani pukul <b>09:00 s/d 17:00 WIB</b>.
+                </small>
+            </div>
+
+            <div class="section-title">4. Metode Pembayaran</div>
+            <div class="form-group">
+                <select id="metode_pembayaran" name="metode_pembayaran" class="form-control" onchange="toggleTransfer()" required>
+                    <option value="transfer">Transfer Bank (Wajib Unggah Bukti)</option>
+                    <option value="bayar di kantor">Bayar Tunai di Kantor</option>
+                </select>
+            </div>
+            <div id="kantorBox" class="transfer-box" style="background: #fff7ed; border: 1px dashed #ea580c; display: none; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                <label style="font-size: 13px; font-weight: 600; color: #9a3412;"><i class="bi bi-exclamation-triangle-fill"></i> Ketentuan Pelunasan Di Kantor</label>
+                <p style="font-size: 13.5px; color: #475569; margin-top: 8px; line-height: 1.5; margin-bottom: 0;">
+                    Pesanan Anda wajib dilunasi langsung di kantor PT Mitrabeton Perkasa <b>maksimal H-7 sebelum estimasi waktu pengecoran</b>. Jika dalam tenggat waktu tersebut belum ada pelunasan, sistem akan otomatis membatalkan pesanan ini (<b>Status: EXPIRED / DITOLAK</b>).
+                </p>
+            </div>
+
+            <!-- BAGIAN DINAMIS BANK DARI DATABASE -->
+            <div id="transferBox" class="transfer-box">
+                <label style="font-size: 13px; font-weight: 600; color: #14532d;"><i class="bi bi-bank"></i> Pilih Rekening Tujuan Transfer</label>
+                
+                <select name="bank_tujuan" id="pilih_bank" class="form-control" style="margin-top: 8px;" onchange="updateBankInfo()" required>
+                    <option value="" disabled selected>-- Silakan Pilih Rekening --</option>
+                    <% if (typeof banks !== 'undefined' && banks.length > 0) { %>
+                        <% banks.forEach(bank => { %>
+                            <!-- Data norek dan nama disimpan di atribut data-* agar bisa ditarik JS -->
+                            <option value="<%= bank.nama_bank %>" 
+                                    data-norek="<%= bank.nomor_rekening %>" 
+                                    data-nama="<%= bank.nama_pemilik %>">
+                                <%= bank.nama_bank %> - <%= bank.nomor_rekening %> (a.n <%= bank.nama_pemilik %>)
+                            </option>
+                        <% }) %>
+                    <% } else { %>
+                        <option value="" disabled>Belum ada rekening aktif</option>
+                    <% } %>
+                </select>
+
+                <div class="bank-info">
+                    <div>
+                        <div style="font-size: 11px; color: #64748b;">NOMOR REKENING:</div>
+                        <!-- Nilai default strip (-), akan berubah sesuai pilihan bank -->
+                        <div style="font-size: 20px; font-weight: bold; color: #14532d; margin: 4px 0;" id="norek">-</div>
+                        <div style="font-size: 12px; color: #334155;" id="nama_pemilik">A/N: -</div>
+                    </div>
+                    <button type="button" class="btn-copy" onclick="copyNorek()"><i class="bi bi-files"></i> Salin</button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label style="font-size: 13px; font-weight: 600; color: #14532d;"><i class="bi bi-upload"></i> Unggah Bukti Transfer</label>
+                    <input type="file" id="bukti_pembayaran" name="bukti_pembayaran" accept="image/*" class="form-control" style="margin-top: 8px;" required>
+                    <small style="color: #64748b; font-size: 11px;">Format JPG/PNG, Maksimal 2MB</small>
+                </div>
+            </div>
+
+            <div class="total-box">
+                <h4>TOTAL PEMBAYARAN:</h4>
+                <h2 id="totalTeks">Rp 0</h2>
+                <p>(Harga Satuan: Rp <%= Number(produk.harga).toLocaleString('id-ID') %> / m³)</p>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-submit">Konfirmasi & Buat Pesanan <i class="bi bi-arrow-right-circle ms-1"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Validasi Kalender (Kunci di H+10)
+    function setupKalender() {
+        const inputTanggal = document.getElementById('waktu_pengiriman');
+        const hariIni = new Date();
+        hariIni.setDate(hariIni.getDate() + 10); // Set minimal H+10
+        
+        // Ubah jadi format YYYY-MM-DDTHH:MM sesuai standar datetime-local html
+        const tahun = hariIni.getFullYear();
+        const bulan = String(hariIni.getMonth() + 1).padStart(2, '0');
+        const hari = String(hariIni.getDate()).padStart(2, '0');
+        
+        inputTanggal.min = `${tahun}-${bulan}-${hari}T00:00`;
+    }
+
+    // Hitung total harga berjalan
+    function hitungTotal() {
+        const volume = document.getElementById('volume').value;
+        const harga = document.getElementById('harga_satuan').value;
+        const total = (volume * harga) || 0;
+        document.getElementById('totalTeks').innerText = "Rp " + total.toLocaleString('id-ID');
+    }
+
+    // Validasi Real-time kelipatan 7 
+    function validasiVolume() {
+        const vol = parseInt(document.getElementById('volume').value);
+        const btn = document.getElementById('btnSubmit');
+        const err = document.getElementById('errorVolume');
+        
+        if (vol && (vol < 7 || vol % 7 !== 0)) {
+            err.style.display = 'block';
+            btn.disabled = true; // Matikan tombol submit
+        } else {
+            err.style.display = 'none';
+            btn.disabled = false; // Nyalakan tombol
+        }
+    }
+
+    // Fungsi otomatis ubah Norek dan Nama saat Bank dipilih
+    function updateBankInfo() {
+        const select = document.getElementById('pilih_bank');
+        const selectedOption = select.options[select.selectedIndex];
+        
+        if (selectedOption.value !== "") {
+            const norek = selectedOption.getAttribute('data-norek');
+            const nama = selectedOption.getAttribute('data-nama');
+            
+            document.getElementById('norek').innerText = norek;
+            document.getElementById('nama_pemilik').innerText = "A/N: " + nama;
+        } else {
+            document.getElementById('norek').innerText = "-";
+            document.getElementById('nama_pemilik').innerText = "A/N: -";
+        }
+    }
+
+    // Tambahkan fungsi pencegahan submit langsung di sisi Front-End
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const waktuInput = document.getElementById('waktu_pengiriman').value;
+        if (waktuInput) {
+            const jadwal = new Date(waktuInput);
+            const jam = jadwal.getHours();
+            const menit = jadwal.getMinutes();
+
+            // Jika jam di bawah jam 9 pagi ATAU di atas jam 5 sore (17:01 ke atas)
+            if (jam < 9 || jam > 17 || (jam === 17 && menit > 0)) {
+                e.preventDefault(); // Gagalkan pengiriman form ke server
+                alert("Waktu pengecoran tidak valid! Jam operasional pabrik hanya melayani pengiriman dari pukul 09:00 sampai 17:00 WIB.");
+                document.getElementById('waktu_pengiriman').focus();
+            }
+        }
+    });
+
+    // Tampilkan/Sembunyikan form bukti transfer dan req field
+    function toggleTransfer() {
+        const metode = document.getElementById('metode_pembayaran').value;
+        const transferBox = document.getElementById('transferBox');
+        const kantorBox = document.getElementById('kantorBox');
+        const inputBukti = document.getElementById('bukti_pembayaran');
+        const inputBank = document.getElementById('pilih_bank');
+
+        if (metode === 'transfer') {
+            transferBox.style.display = 'block';
+            kantorBox.style.display = 'none';
+            inputBukti.setAttribute('required', 'required');
+            inputBank.setAttribute('required', 'required');
+        } else {
+            transferBox.style.display = 'none';
+            kantorBox.style.display = 'block';
+            inputBukti.removeAttribute('required');
+            inputBank.removeAttribute('required');
+            
+            // Reset info bank jika ubah metode
+            inputBank.value = "";
+            updateBankInfo();
+        }
+    }
+
+    // Fitur Salin Rekening
+    function copyNorek() {
+        const norek = document.getElementById('norek').innerText;
+        if(norek === "-") {
+            alert("Silakan pilih bank terlebih dahulu!");
+            return;
+        }
+        navigator.clipboard.writeText(norek);
+        alert("Nomor rekening disalin: " + norek);
+    }
+
+    // Jalankan skrip saat halaman termuat
+    window.onload = () => {
+        toggleTransfer();
+        hitungTotal(); // Panggil biar pas loading langsung muncul harga volume 7 m3
+        setupKalender(); 
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

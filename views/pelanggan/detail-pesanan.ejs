@@ -1,0 +1,259 @@
+<%- include('../partials/header-pelanggan') %>
+
+<style>
+    :root {
+        --mbp-green: #03ac0e;
+        --mbp-dark: #14532d;
+        --mbp-light: #f0fdf4;
+        --mbp-border: #bbf7d0;
+        --mbp-hover: #166534;
+    }
+    
+    body { background-color: #f5f7fa; }
+    
+    .mbp-card {
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.05);
+        background: #ffffff;
+    }
+
+    .card-title-custom {
+        color: var(--mbp-dark);
+        font-weight: 700;
+        font-size: 1.15rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-row { margin-bottom: 1rem; }
+    .info-label { color: #64748b; font-size: 0.95rem; }
+    .info-value { color: #1e293b; font-weight: 600; }
+
+    .total-box {
+        background: linear-gradient(145deg, #ffffff, var(--mbp-light));
+        border: 1px solid var(--mbp-border);
+        border-left: 4px solid var(--mbp-green);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .back-link {
+        color: #64748b;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .back-link:hover { color: var(--mbp-green); transform: translateX(-3px); }
+
+    /* Custom Badges */
+    .badge-lg { padding: 0.75rem 1.5rem; font-size: 0.95rem; letter-spacing: 0.5px; }
+    
+    .status-order-badge { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+    .status-order-menunggu { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .status-order-diproses { background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-order-dikirim { background-color: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .status-order-selesai { background-color: var(--mbp-light); color: var(--mbp-dark); border: 1px solid var(--mbp-border); }
+    .status-order-batal { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+    .btn-outline-brand {
+        color: var(--mbp-green);
+        border: 2px solid var(--mbp-green);
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    .btn-outline-brand:hover { background-color: var(--mbp-green); color: white; }
+    
+    .btn-outline-info-custom {
+        color: #0dcaf0;
+        border: 2px solid #0dcaf0;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    .btn-outline-info-custom:hover { background-color: #0dcaf0; color: white; }
+</style>
+
+<main class="container my-5">
+    <div class="mb-4">
+        <a href="/pelanggan/riwayat" class="text-decoration-none back-link mb-2">
+            <i class="bi bi-arrow-left"></i> Kembali ke Riwayat
+        </a>
+        <h2 class="fw-bold mt-1" style="color: var(--mbp-dark);">
+            Detail Pesanan <span style="color: #94a3b8;">#INV-<%= pesanan.id %></span>
+        </h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mbp-card mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-box-seam text-success"></i> Informasi Produk
+                    </h5>
+                    
+                    <div class="row info-row">
+                        <div class="col-sm-4 info-label">Produk / Mutu</div>
+                        <div class="col-sm-8 info-value text-uppercase"><%= pesanan.nama_produk %></div>
+                    </div>
+
+                    <div class="row info-row">
+                        <div class="col-sm-4 info-label">Volume Kebutuhan</div>
+                        <div class="col-sm-8 info-value">
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 border"><%= pesanan.volume %> m³</span>
+                        </div>
+                    </div>
+
+                    <div class="row info-row">
+                        <div class="col-sm-4 info-label">Harga Satuan</div>
+                        <div class="col-sm-8 info-value">Rp <%= pesanan.harga.toLocaleString('id-ID') %></div>
+                    </div>
+                    
+                    <div class="total-box d-flex justify-content-between align-items-center">
+                        <div class="info-label mb-0 fw-bold" style="color: var(--mbp-dark);">Total Pembayaran</div>
+                        <div class="fw-bold fs-4" style="color: var(--mbp-green);">
+                            Rp <%= pesanan.total_harga.toLocaleString('id-ID') %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mbp-card mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="card-title-custom">
+                        <i class="bi bi-truck text-success"></i> Pengiriman & Operasional
+                    </h5>
+                    
+                    <div class="row info-row">
+                        <div class="col-sm-4 info-label">Alamat Kirim</div>
+                        <div class="col-sm-8 info-value lh-base"><%= pesanan.alamat_pengiriman %></div>
+                    </div>
+                    <div class="row info-row">
+                        <div class="col-sm-4 info-label">Kontak di Lokasi</div>
+                        <div class="col-sm-8 info-value d-flex align-items-center gap-2">
+                            <i class="bi bi-telephone-fill text-muted small"></i> <%= pesanan.nomor_telepon %>
+                        </div>
+                    </div>
+                    <div class="row info-row mb-0">
+                        <div class="col-sm-4 info-label">Waktu Pengecoran</div>
+                        <div class="col-sm-8 info-value">
+                            <%= pesanan.waktu_pengiriman ? new Date(pesanan.waktu_pengiriman).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-' %> WIB
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <% 
+                const statusOrderCek = pesanan.status_pesanan ? pesanan.status_pesanan.toLowerCase() : '';
+                if ((statusOrderCek === 'dibatalkan' || statusOrderCek === 'ditolak') && pesanan.catatan_admin) { 
+            %>
+                <div class="alert alert-danger rounded-4 border-0 shadow-sm p-4 mt-4">
+                    <h6 class="fw-bold text-danger mb-2">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Catatan Pembatalan:
+                    </h6>
+                    <p class="mb-0 small text-danger" style="line-height: 1.6;">"<%= pesanan.catatan_admin %>"</p>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="col-lg-4">
+            <% 
+                const sBayar = pesanan.status_bayar ? pesanan.status_bayar.toLowerCase() : ''; 
+                const isRefunded = (sBayar === 'refund' || sBayar === 'reffund');
+                const sOrder = pesanan.status_pesanan ? pesanan.status_pesanan.toLowerCase() : ''; // FIXED: Pakai status_pesanan
+
+                let orderBadgeClass = "status-order-badge";
+                if(sOrder === 'menunggu_konfirmasi') orderBadgeClass = "status-order-menunggu"; // FIXED
+                else if(sOrder === 'diproses') orderBadgeClass = "status-order-diproses";
+                else if(sOrder === 'dikirim') orderBadgeClass = "status-order-dikirim";
+                else if(sOrder === 'selesai') orderBadgeClass = "status-order-selesai";
+                else if(sOrder === 'dibatalkan' || sOrder === 'ditolak') orderBadgeClass = "status-order-batal"; // FIXED
+            %>
+
+            <div class="card mbp-card mb-4 text-center p-3">
+                <div class="card-body">
+                    <p class="text-muted small fw-bold text-uppercase tracking-wider mb-2">Status Pesanan</p>
+                    <div class="badge rounded-pill badge-lg <%= orderBadgeClass %> w-100 mb-4 text-uppercase fw-bold shadow-sm">
+                        <%= pesanan.status_pesanan.replace('_', ' ') %>
+                    </div>
+                    
+                    <p class="text-muted small fw-bold text-uppercase tracking-wider mb-2">Status Pembayaran</p>
+                    <div class="badge rounded-pill badge-lg w-100 fw-bold shadow-sm
+                        <%= sBayar === 'lunas' ? 'bg-success text-white' : 
+                            (isRefunded ? 'bg-secondary bg-opacity-25 text-secondary border' : 'bg-warning text-dark') %>">
+                        <i class="bi <%= sBayar === 'lunas' ? 'bi-check2-circle' : (isRefunded ? 'bi-arrow-return-left' : 'bi-hourglass-split') %> me-1"></i> 
+                        <%= pesanan.status_bayar.toUpperCase() %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mbp-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title-custom mb-4">
+                        <i class="bi bi-folder2-open text-success"></i> Dokumen
+                    </h5>
+                    
+                    <% if (pesanan.bukti_pembayaran) { %>
+                        <div class="d-grid mb-3">
+                            <a href="/uploads/<%= pesanan.bukti_pembayaran %>" target="_blank" class="btn btn-outline-brand text-start py-2 px-3 shadow-sm d-flex align-items-center">
+                                <i class="bi bi-file-earmark-check fs-5 me-2"></i> 
+                                <span>Bukti Pembayaran</span>
+                            </a>
+                        </div>
+                    <% } else if (pesanan.metode_pembayaran === 'transfer') { %>
+                        <div class="alert alert-warning small p-3 rounded-3 mb-3 border-0">
+                            <strong>Wajib!</strong> Silakan unggah bukti transfer.
+                        </div>
+                        <form action="/pelanggan/upload-bukti" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="pesanan_id" value="<%= pesanan.id %>">
+                            <input type="file" name="bukti_pembayaran" class="form-control form-control-sm mb-2" accept="image/*" required>
+                            <button type="submit" class="btn btn-sm btn-success w-100 fw-bold">Unggah Bukti</button>
+                        </form>
+                    <% } %>
+
+                    <% if (!pesanan.bukti_pembayaran && pesanan.metode_pembayaran !== 'transfer') { %>
+                        <div class="text-center py-3 opacity-75">
+                            <i class="bi bi-file-earmark-x fs-1 text-muted mb-2 d-block"></i>
+                            <span class="text-muted small">Pembayaran di Loket Kantor.</span>
+                        </div>
+                    <% } %>
+
+                    <% if (isRefunded) { %>
+                        <hr class="mt-4 mb-3 border-secondary border-opacity-25">
+                        <h6 class="fw-bold mb-3 text-info"><i class="bi bi-arrow-return-left"></i> Dana Pengembalian</h6>
+                        
+                        <% if (pesanan.bukti_refund) { %>
+                            <div class="d-grid mb-3">
+                                <a href="/uploads/<%= pesanan.bukti_refund %>" target="_blank" class="btn btn-outline-info-custom text-start py-2 px-3 shadow-sm d-flex align-items-center">
+                                    <i class="bi bi-receipt fs-5 me-2"></i> 
+                                    <span>Lihat Bukti Transfer Refund</span>
+                                </a>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info small p-3 rounded-3 mb-0 border-0 text-center">
+                                <i class="bi bi-hourglass-split d-block fs-3 mb-2 opacity-50"></i>
+                                Dana refund Anda sedang diproses oleh admin. Harap tunggu sesaat.
+                            </div>
+                        <% } %>
+                    <% } %>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

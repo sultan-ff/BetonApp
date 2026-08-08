@@ -1,0 +1,206 @@
+<%- include('../partials/header-pelanggan') %>
+
+<style>
+    :root {
+        --mbp-green: #03ac0e;
+        --mbp-dark: #14532d;
+        --mbp-light: #f0fdf4;
+        --mbp-border: #bbf7d0;
+        --mbp-hover: #166534;
+    }
+    
+    body { background-color: #f5f7fa; }
+    
+    .mbp-card {
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.05);
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--mbp-dark) 0%, var(--mbp-green) 100%);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background-color: white;
+        color: var(--mbp-green);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1rem auto;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .form-control:focus {
+        border-color: var(--mbp-green);
+        box-shadow: 0 0 0 0.25rem rgba(3, 172, 14, 0.25);
+    }
+
+    .btn-brand {
+        background-color: var(--mbp-green);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 0.6rem 1.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-brand:hover {
+        background-color: var(--mbp-hover);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(3, 172, 14, 0.2);
+    }
+
+    .nav-pills-custom .nav-link {
+        color: #64748b;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .nav-pills-custom .nav-link:hover {
+        background-color: #f1f5f9;
+        color: var(--mbp-dark);
+    }
+
+    .nav-pills-custom .nav-link.active {
+        background-color: var(--mbp-light);
+        color: var(--mbp-green);
+        border-left: 4px solid var(--mbp-green);
+    }
+</style>
+
+<main class="container my-5" style="min-height: 80vh;">
+    <div class="mb-4">
+        <h2 class="fw-bold mt-1" style="color: var(--mbp-dark);">Profil Saya</h2>
+        <p class="text-muted">Kelola informasi data diri dan keamanan akun Anda.</p>
+    </div>
+
+    <% if (typeof pesan_sukses !== 'undefined' && pesan_sukses) { %>
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <%= pesan_sukses %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+    <% if (typeof pesan_error !== 'undefined' && pesan_error) { %>
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= pesan_error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card mbp-card mb-4">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1"><%= namaUser %></h5>
+                    <p class="mb-0 opacity-75 small"><%= user.email %></p>
+                </div>
+                <div class="card-body p-3">
+                    <div class="nav flex-column nav-pills nav-pills-custom" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link text-start active" id="v-pills-profil-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profil" type="button" role="tab" aria-controls="v-pills-profil" aria-selected="true">
+                            <i class="bi bi-person-lines-fill me-2"></i> Data Diri
+                        </button>
+                        <button class="nav-link text-start" id="v-pills-password-tab" data-bs-toggle="pill" data-bs-target="#v-pills-password" type="button" role="tab" aria-controls="v-pills-password" aria-selected="false">
+                            <i class="bi bi-shield-lock-fill me-2"></i> Keamanan & Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card mbp-card">
+                <div class="card-body p-4 p-md-5">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        
+                        <div class="tab-pane fade show active" id="v-pills-profil" role="tabpanel" aria-labelledby="v-pills-profil-tab">
+                            <h5 class="fw-bold border-bottom pb-3 mb-4" style="color: var(--mbp-dark);">Informasi Data Diri</h5>
+                            
+                            <form action="/pelanggan/profil/update" method="POST">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary">Nama Lengkap</label>
+                                    <input type="text" class="form-control form-control-lg bg-light" name="nama" value="<%= user.nama %>" required>
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-4 mb-md-0">
+                                        <label class="form-label fw-semibold text-secondary">Alamat Email</label>
+                                        <input type="email" class="form-control form-control-lg bg-light" name="email" value="<%= user.email %>" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-secondary">Nomor WhatsApp / HP</label>
+                                        <input type="text" class="form-control form-control-lg bg-light" name="no_hp" value="<%= user.no_hp || user.nomor_telepon || '' %>" required>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn btn-brand d-inline-flex align-items-center gap-2">
+                                        <i class="bi bi-save"></i> Simpan Perubahan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab">
+                            <h5 class="fw-bold border-bottom pb-3 mb-4" style="color: var(--mbp-dark);">Ubah Password</h5>
+                            
+                            <form action="/pelanggan/profil/password" method="POST">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary">Password Saat Ini</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                                        <input type="password" class="form-control form-control-lg bg-light" name="password_lama" required placeholder="Masukkan password lama Anda">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary">Password Baru</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                                        <input type="password" class="form-control form-control-lg bg-light" name="password_baru" required placeholder="Minimal 8 karakter">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-secondary">Konfirmasi Password Baru</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                                        <input type="password" class="form-control form-control-lg bg-light" name="konfirmasi_password" required placeholder="Ulangi password baru">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn btn-brand d-inline-flex align-items-center gap-2">
+                                        <i class="bi bi-shield-lock"></i> Perbarui Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

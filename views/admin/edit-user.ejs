@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Data User - Panel Admin MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== STRUKTUR DASAR (MENCEGAH SIDEBAR TUMPANG TINDIH) ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        
+        /* ── Header Topbar ── */
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #1e293b; font-size: 18px; }
+        /* ========================================================================================= */
+
+        /* ── Bagian Form Title ── */
+        .form-header-container { text-align: center; margin-bottom: 30px; }
+        .form-header-container h2 { font-weight: 800; color: #0f172a; font-size: 28px; margin: 0 0 8px 0; }
+        .form-header-container p { color: #64748b; font-size: 15px; margin: 0; }
+
+        /* ── Container Form Putih di Tengah ── */
+        .form-card { background-color: #ffffff; border-radius: 16px; padding: 40px; max-width: 550px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9; }
+
+        /* ── Styling Input & Label ── */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #334155; font-weight: 700; font-size: 14px; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i { position: absolute; left: 15px; color: #94a3b8; font-size: 18px; }
+        
+        /* Input Teks & Password */
+        .form-control-custom { width: 100%; padding: 12px 15px 12px 45px; background-color: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 8px; font-size: 14.5px; transition: 0.3s ease; box-sizing: border-box; outline: none; }
+        .form-control-custom:focus { background-color: #ffffff; border-color: #0f172a; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
+        
+        /* Input Select / Dropdown (Icon-nya beda posisi) */
+        .select-wrapper i { color: #94a3b8; }
+        .form-select-custom { width: 100%; padding: 12px 15px; background-color: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 8px; font-size: 14.5px; transition: 0.3s ease; box-sizing: border-box; outline: none; appearance: none; cursor: pointer; }
+        .form-select-custom:focus { background-color: #ffffff; border-color: #0f172a; }
+        
+        /* Panah Custom Dropdown */
+        .select-wrapper::after { content: '\F282'; font-family: 'bootstrap-icons'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #64748b; pointer-events: none; font-size: 14px; }
+
+        /* ── Pesan Bantuan Password ── */
+        .password-hint { font-size: 12px; color: #94a3b8; margin-top: 6px; display: block; font-weight: 500; }
+
+        /* ── Tombol Simpan & Batal ── */
+        .btn-submit { background-color: #0f172a; color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; width: 100%; transition: 0.2s ease; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-submit:hover { background-color: #1e293b; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 23, 42, 0.15); }
+        
+        .btn-cancel { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.2s; }
+        .btn-cancel:hover { color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Super Admin' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px;">Admin Master</span>
+            </div>
+        </div>
+        
+        <div class="form-header-container">
+            <h2>Edit Data User</h2>
+            <p>Perbarui informasi profil atau ubah hak akses divisi pengguna terkait.</p>
+        </div>
+
+        <div class="form-card">
+            <form action="/admin/users/edit/<%= userData.id %>" method="POST">
+                
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-person"></i>
+                        <input type="text" name="nama" value="<%= userData.nama %>" required class="form-control-custom" placeholder="Masukkan nama lengkap...">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Alamat Email</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" name="email" value="<%= userData.email %>" required class="form-control-custom" placeholder="admin@readymix.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password Sistem</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-key"></i>
+                        <input type="password" name="password" class="form-control-custom" placeholder="••••••••••••">
+                    </div>
+                    <span class="password-hint">*Kosongkan form ini jika tidak ingin mengubah password akun.</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Role (Hak Akses Divisi)</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select name="role" required class="form-select-custom">
+                            <option value="" disabled>— Pilih Hak Akses —</option>
+                            <option value="pelanggan" <%= userData.role === 'pelanggan' ? 'selected' : '' %>>Pelanggan Eksternal</option>
+                            <option value="penjualan" <%= userData.role === 'penjualan' ? 'selected' : '' %>>Admin Penjualan</option>
+                            <option value="gudang" <%= userData.role === 'gudang' ? 'selected' : '' %>>Admin Gudang</option>
+                            <option value="pembelian" <%= userData.role === 'pembelian' ? 'selected' : '' %>>Admin Pembelian</option>
+                            <option value="admin" <%= userData.role === 'admin' ? 'selected' : '' %>>Super Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-floppy"></i> Update Data User
+                </button>
+                <a href="/admin/users" class="btn-cancel">Batalkan & Kembali</a>
+                
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+</body>
+</html>

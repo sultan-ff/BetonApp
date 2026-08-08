@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Histori Stok - Panel Gudang MBP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ==================== CETAKAN STRUKTUR WAJIB KONSISTEN ==================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; min-height: 100vh; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; min-height: 100vh; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 8px 20px; border-radius: 30px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .admin-profile i { color: #0891b2; font-size: 18px; }
+        /* ========================================================================== */
+
+        /* ── Header Halaman & Export ── */
+        .page-header-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
+        .page-header h2 { font-weight: 800; color: #164e63; font-size: 26px; margin: 0 0 5px 0; }
+        .page-header p { color: #64748b; font-size: 15px; margin: 0; }
+        
+        .export-group { display: flex; gap: 10px; }
+        .btn-export { border: none; border-radius: 8px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; text-decoration: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-pdf { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-pdf:hover { background: #dc2626; color: white; }
+        .btn-excel { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .btn-excel:hover { background: #16a34a; color: white; }
+
+        /* ── Wrapper Filter Baru ── */
+        .filter-wrapper { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; align-items: center; }
+
+        /* ── Filter Tabs (Status) ── */
+        .filter-container { background: white; padding: 8px 12px; border-radius: 12px; display: inline-flex; gap: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.01); }
+        .btn-filter { padding: 8px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-decoration: none; color: #64748b; transition: 0.2s; }
+        .btn-filter:hover { background: #f1f5f9; color: #1e293b; }
+        
+        .filter-semua.active { background: #0f172a; color: white; }
+        .filter-masuk.active { background: #16a34a; color: white; }
+        .filter-keluar.active { background: #dc2626; color: white; }
+
+        /* ── Filter Tanggal ── */
+        .date-filter-form { background: white; padding: 8px 15px; border-radius: 12px; display: inline-flex; gap: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.01); align-items: center; }
+        .date-input-group { display: flex; align-items: center; gap: 8px; }
+        .date-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 13px; color: #475569; outline: none; background: #f8fafc; transition: 0.2s; }
+        .date-input:focus { border-color: #0891b2; background: white; }
+        .date-label { font-size: 13px; color: #64748b; font-weight: 500; }
+        .btn-cari-tanggal { background: #0ea5e9; color: white; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px; font-weight: 600; transition: 0.2s; }
+        .btn-cari-tanggal:hover { background: #0284c7; }
+        .btn-reset-tanggal { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; font-size: 13px; text-decoration: none; transition: 0.2s; display: inline-flex; align-items: center;}
+        .btn-reset-tanggal:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* ── Tabel MBP Modern ── */
+        .card-table { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; }
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; }
+        
+        .table thead th { background-color: #f8fafc; color: #64748b; font-size: 11.5px; font-weight: 700; text-transform: uppercase; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; border-top: none; letter-spacing: 0.5px; }
+        .table tbody td { padding: 18px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .table tbody tr:hover { background-color: #fcfcfc; }
+
+        /* ── Komponen Data ── */
+        .date-text { font-size: 13.5px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 8px; }
+        .date-text i { color: #94a3b8; font-size: 16px; }
+        .prod-name { font-weight: 800; color: #1e293b; }
+        
+        .badge-trx { padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
+        .trx-masuk { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .trx-keluar { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .trx-adjust { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+
+        .qty-text { font-size: 16px; font-weight: 800; text-align: center; display: block; }
+        .qty-plus { color: #16a34a; }
+        .qty-minus { color: #dc2626; }
+        
+        .keterangan-text { color: #64748b; font-size: 13px; max-width: 250px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { role: role }) %>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="admin-profile">
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Gudang' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px;">Gudang</span>
+            </div>
+        </div>
+
+        <div class="page-header-container">
+            <div class="page-header">
+                <h2>Laporan Histori Transaksi Barang</h2>
+                <p>Pantau riwayat pergerakan beton keluar dan penambahan stok masuk di gudang.</p>
+            </div>
+            
+            <div class="export-group">
+                <!-- URL Export sekarang membawa filter status DAN tanggal -->
+                <a href="/gudang/laporan-stok/excel?filter=<%= currentFilter %>&startDate=<%= typeof startDate !== 'undefined' ? startDate : '' %>&endDate=<%= typeof endDate !== 'undefined' ? endDate : '' %>" class="btn-export btn-excel">
+                    <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
+                </a>
+                <a href="/gudang/laporan-stok/pdf?filter=<%= currentFilter %>&startDate=<%= typeof startDate !== 'undefined' ? startDate : '' %>&endDate=<%= typeof endDate !== 'undefined' ? endDate : '' %>" target="_blank" class="btn-export btn-pdf">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> Cetak PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- BUNGKUSAN FILTER UTAMA -->
+        <div class="filter-wrapper">
+            
+            <!-- 1. Filter Status (Masuk/Keluar) -->
+            <div class="filter-container">
+                <a href="/gudang/laporan-stok?filter=&startDate=<%= typeof startDate !== 'undefined' ? startDate : '' %>&endDate=<%= typeof endDate !== 'undefined' ? endDate : '' %>" class="btn-filter filter-semua <%= currentFilter === '' ? 'active' : '' %>">
+                    Semua Riwayat
+                </a>
+                <a href="/gudang/laporan-stok?filter=masuk&startDate=<%= typeof startDate !== 'undefined' ? startDate : '' %>&endDate=<%= typeof endDate !== 'undefined' ? endDate : '' %>" class="btn-filter filter-masuk <%= currentFilter === 'masuk' ? 'active' : '' %>">
+                    <i class="bi bi-arrow-down-circle-fill me-1"></i> Stok Masuk
+                </a>
+                <a href="/gudang/laporan-stok?filter=keluar&startDate=<%= typeof startDate !== 'undefined' ? startDate : '' %>&endDate=<%= typeof endDate !== 'undefined' ? endDate : '' %>" class="btn-filter filter-keluar <%= currentFilter === 'keluar' ? 'active' : '' %>">
+                    <i class="bi bi-arrow-up-circle-fill me-1"></i> Stok Keluar
+                </a>
+            </div>
+
+            <!-- 2. Filter Tanggal (Start Date - End Date) -->
+            <form action="/gudang/laporan-stok" method="GET" class="date-filter-form">
+                <!-- Hidden input untuk mempertahankan filter status saat submit tanggal -->
+                <input type="hidden" name="filter" value="<%= currentFilter %>">
+                
+                <div class="date-input-group">
+                    <span class="date-label">Mulai:</span>
+                    <input type="date" name="startDate" class="date-input" value="<%= typeof startDate !== 'undefined' ? startDate : '' %>">
+                </div>
+                
+                <div class="date-input-group">
+                    <span class="date-label">s/d:</span>
+                    <input type="date" name="endDate" class="date-input" value="<%= typeof endDate !== 'undefined' ? endDate : '' %>">
+                </div>
+
+                <button type="submit" class="btn-cari-tanggal">
+                    <i class="bi bi-search"></i> Terapkan
+                </button>
+
+                <!-- Tombol Reset (Muncul jika ada filter tanggal aktif) -->
+                <% if ((typeof startDate !== 'undefined' && startDate) || (typeof endDate !== 'undefined' && endDate)) { %>
+                    <a href="/gudang/laporan-stok?filter=<%= currentFilter %>" class="btn-reset-tanggal" title="Reset Tanggal">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                <% } %>
+            </form>
+
+        </div>
+
+        <div class="card-table table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Waktu & Tanggal</th>
+                        <th>Mutu Beton</th>
+                        <th>Jenis Transaksi</th>
+                        <th style="text-align: center;">Jumlah (m³)</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof laporan === 'undefined' || laporan.length === 0) { %>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 60px 20px; color: #94a3b8;">
+                                <i class="bi bi-card-checklist fs-1 d-block mb-3"></i>
+                                Belum ada riwayat transaksi stok sesuai filter.
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% laporan.forEach(l => { 
+                            let jenisClass = 'trx-adjust';
+                            let jenisLabel = 'Penyesuaian';
+                            let sign = '';
+                            let qtyClass = '';
+
+                            if (l.jenis === 'masuk') {
+                                jenisClass = 'trx-masuk';
+                                jenisLabel = 'Stok Masuk';
+                                sign = '+';
+                                qtyClass = 'qty-plus';
+                            } else if (l.jenis === 'keluar') {
+                                jenisClass = 'trx-keluar';
+                                jenisLabel = 'Stok Keluar';
+                                sign = '-';
+                                qtyClass = 'qty-minus';
+                            }
+                        %>
+                        <tr>
+                            <td>
+                                <div class="date-text">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <%= new Date(l.tanggal).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="prod-name"><%= l.nama_produk %></span>
+                            </td>
+                            <td>
+                                <span class="badge-trx <%= jenisClass %>"><%= jenisLabel %></span>
+                            </td>
+                            <td>
+                                <span class="qty-text <%= qtyClass %>">
+                                    <%= sign %><%= Number(l.jumlah).toLocaleString('id-ID') %>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="keterangan-text">
+                                    <%= l.keterangan || '-' %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>

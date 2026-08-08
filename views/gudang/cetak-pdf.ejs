@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Laporan Stok - PT Mitrabeton Perkasa</title>
+    <style>
+        /* Styling Khusus Kertas HVS / Cetak */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            background: #fff;
+            margin: 0;
+            padding: 20px 40px;
+        }
+        
+        /* Kop Surat */
+       .kop-surat {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* Membagi ruang ke 3 elemen secara merata */
+        border-bottom: 4px double #000;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        }
+        
+        .logo-container {
+            width: 50px; /* Memberi "kamar" khusus untuk logo biar teks nggak bisa masuk */
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        .logo-img {
+            width: 110px; /* Ukuran logo, bisa lu besarin/kecilin di sini */
+            height: auto;
+        }
+        
+        .teks-kop {
+            flex: 1; /* Memaksa teks mengisi seluruh sisa ruang di tengah */
+            text-align: center;
+        }
+        
+        .teks-kop h1 {
+            margin: 0 0 5px 0;
+            font-size: 26px;
+            font-weight: 900;
+            font-family: 'Times New Roman', Times, serif; /* Diubah ke Times New Roman agar lebih formal untuk laporan */
+            letter-spacing: 1px;
+            color: #01682f;
+        }
+        
+        .teks-kop p {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #000;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .spacer-kanan {
+            width: 50px; /* Ukuran harus SAMA PERSIS dengan lebar .logo-container biar teks seimbang di tengah */
+        }
+
+        /* Detail Dokumen */
+        .detail-dokumen {
+            margin-bottom: 20px;
+        }
+        .detail-dokumen table {
+            font-size: 14px;
+        }
+        .detail-dokumen td {
+            padding: 3px 10px 3px 0;
+            vertical-align: top;
+        }
+
+        /* Tabel Data */
+        h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .tabel-data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        .tabel-data th, .tabel-data td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Bagian Tanda Tangan (Menyesuaikan Format Lampiran) */
+        .ttd-section {
+            width: 100%;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        .ttd-section .kota-tanggal {
+            margin-bottom: 5px;
+        }
+        .ttd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .ttd-box {
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Pengaturan Print */
+        @media print {
+            @page { margin: 2cm; }
+            button { display: none !important; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="kop-surat">
+    <div class="logo-container">
+        <img src="/images/logo-mitrabeton.png" alt="Logo PT Mitrabeton Perkasa" class="logo-img">
+    </div>
+    
+    <div class="teks-kop">
+        <h1>PT. MITRABETON PERKASA</h1>
+        <p>Jl. Lingkar Barat-Blok Kidul Kal, Pasuruhan Kidul – Jati Kab. Kudus</p>
+        <p>E-mail: mitrabeton_perkasa@yahoo.com</p>
+    </div>
+</div>
+
+    <div class="detail-dokumen">
+        <table>
+            <tr>
+                <td>Tanggal Cetak</td>
+                <td>: <%= tanggalCetak %></td>
+            </tr>
+            <tr>
+                <td>Dokumen</td>
+                <td>: Laporan Riwayat Stok Barang Jadi</td>
+            </tr>
+        </table>
+    </div>
+
+    <h3>Data Laporan Stok</h3>
+
+    <table class="tabel-data">
+        <thead>
+            <tr>
+                <th>Nomor</th>
+                <th>Waktu & Tanggal</th>
+                <th>Mutu</th>
+                <th>Transaksi</th>
+                <th>Jumlah (m³)</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(laporan.length === 0) { %>
+                <tr><td colspan="6">Tidak ada data.</td></tr>
+            <% } else { %>
+                <% laporan.forEach((l, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= new Date(l.tanggal).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) %></td>
+                    <td><%= l.nama_produk %></td>
+                    <td><%= l.jenis.toUpperCase() %></td>
+                    <td><%= l.jenis === 'keluar' ? '-' : '+' %><%= l.jumlah %></td>
+                    <td><%= l.keterangan %></td>
+                </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+
+    <div style="width: 100%; margin-top: 50px; display: flex; justify-content: flex-end;">
+        <div style="text-align: center; width: 250px; font-size: 14px;">
+            <div style="margin-bottom: 5px;">Kudus, <%= tanggalCetak %></div>
+            <div>Pembuat Laporan,</div>
+            
+            <br><br><br><br> <div style="text-transform: uppercase;"><strong><u><%= namaUser %></u></strong></div>
+            <div>Bagian Gudang</div>
+        </div>
+    </div>
+
+</body>
+</html>
