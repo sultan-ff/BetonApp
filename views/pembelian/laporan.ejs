@@ -44,7 +44,11 @@
     <div class="main-content">
         <div class="topbar">
             <div class="admin-profile">
-                <i class="bi bi-person-circle"></i> <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Pembelian' %>
+                <i class="bi bi-person-circle"></i>
+                <%= typeof namaUser !== 'undefined' ? namaUser : 'Tim Pembelian' %>
+                <span style="background: #f1f5f9; padding: 2px 10px; border-radius: 12px; font-size: 11px; color: #64748b; margin-left: 5px; text-transform: capitalize;">
+                    Pembelian
+                </span>
             </div>
         </div>
         <div class="page-header">
