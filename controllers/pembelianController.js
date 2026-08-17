@@ -10,8 +10,8 @@ const pembelianController = {
             const [selesai] = await db.query("SELECT COUNT(*) as total FROM purchase_order WHERE status = 'selesai'");
 
             res.render('pembelian/dashboard', {
-                namaUser: req.session.nama,
-                role: req.session.role ,
+                namaUser: req.session.nama || 'Tim Pembelian',
+                role: req.session.role || 'pembelian',
                 stats: {
                     menunggu: menunggu[0].total,
                     disetujui: disetujui[0].total,
@@ -36,8 +36,8 @@ const pembelianController = {
             `);
 
             res.render('pembelian/permintaan', {
-                namaUser: req.session.nama ,
-                role: req.session.role ,
+                namaUser: req.session.nama || 'Tim Pembelian',
+                role: req.session.role || 'pembelian',
                 listPO: poList
             });
         } catch (error) {
@@ -78,7 +78,7 @@ const pembelianController = {
 
             res.render('pembelian/cetak-po', {
                 po: poData[0],
-                namaUser: req.session.nama 
+                namaUser: req.session.nama || 'Tim Pembelian'
             });
         } catch (error) {
             console.error(error);
@@ -93,8 +93,8 @@ const pembelianController = {
             const db = require('../config/db');
             const [suppliers] = await db.query('SELECT * FROM supplier ORDER BY id DESC');
             res.render('pembelian/supplier', {
-                namaUser: req.session.nama ,
-                role: req.session.role ,
+                namaUser: req.session.nama || 'Tim Pembelian',
+                role: req.session.role || 'pembelian',
                 listSupplier: suppliers
             });
         } catch (error) {
@@ -176,8 +176,8 @@ const pembelianController = {
             
             // 6. Kirim semua data ke EJS
             res.render('pembelian/laporan', {
-                namaUser: req.session.nama ,
-                role: req.session.role ,
+                namaUser: req.session.nama || 'Tim Pembelian',
+                role: req.session.role || 'pembelian',
                 listLaporan: laporan,
                 listSupplier: listSupplier, // Kirim daftar supplier buat dropdown
                 listProduk: listProduk,     // Kirim daftar produk buat dropdown
@@ -206,7 +206,8 @@ const pembelianController = {
             const tanggalCetak = `${date.getDate()} ${bulanIndo[date.getMonth()]} ${date.getFullYear()}`;
 
             res.render('pembelian/cetak-laporan', {
-                namaUser: req.session.nama ,
+                namaUser: req.session.nama || 'Tim Pembelian',
+                listLaporan: laporan,
                 tanggalCetak: tanggalCetak
             });
         } catch (error) {
