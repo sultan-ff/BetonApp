@@ -135,7 +135,7 @@
                         <% } else { %>
                             <% produkStok.forEach(p => { 
                                 // Asumsi kapasitas maksimal gudang per produk adalah 1000 m³
-                                const MAX_KAPASITAS = 100;
+                                const MAX_KAPASITAS = 300;
                                 let persentase = (p.stok / MAX_KAPASITAS) * 100;
                                 if(persentase > 100) persentase = 100;
                                 if(persentase < 0) persentase = 0;
